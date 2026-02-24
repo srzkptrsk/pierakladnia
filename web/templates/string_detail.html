@@ -101,16 +101,27 @@
                 <thead class="table-light">
                     <tr>
                         <th style="width: 180px;">Date</th>
-                        <th style="width: 100px;">User ID</th>
+                        <th style="width: 100px;">User</th>
                         <th style="width: 35%;">Old Text</th>
                         <th style="width: 35%;">New Text</th>
                     </tr>
                 </thead>
                 <tbody>
                 {{range .Revisions}}
+                    {{ $email := "" }}
+                    {{ if .ChangedBy }}
+                        {{ $u := index $.UsersMap (int .ChangedBy) }}
+                        {{ $email = $u.Email }}
+                    {{ end }}
                     <tr>
                         <td><small>{{formatDate .ChangedAt}}</small></td>
-                        <td><small>{{formatUser .ChangedBy}}</small></td>
+                        <td title="{{$email}}">
+                            {{if $email}}
+                            <img src="{{gravatarURL $email}}" alt="Avatar" class="rounded-circle" width="24" height="24">
+                            {{else}}
+                            <small>{{formatUser .ChangedBy}}</small>
+                            {{end}}
+                        </td>
                         <td><small class="text-danger">{{.OldText}}</small></td>
                         <td><small class="text-success">{{.NewText}}</small></td>
                     </tr>

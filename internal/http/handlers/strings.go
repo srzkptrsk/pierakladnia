@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"pierakladnia/internal/app"
 	"pierakladnia/internal/db"
@@ -15,6 +17,25 @@ import (
 func StringsList(deps *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		activeProject := GetActiveProjectFromContext(r.Context())
+
+		// If no query params at all, restore from cookie
+		if r.URL.RawQuery == "" {
+			if c, err := r.Cookie("strings_filter"); err == nil && c.Value != "" {
+				restored, err := url.QueryUnescape(c.Value)
+				if err == nil && restored != "" {
+					http.Redirect(w, r, "/strings?"+restored, http.StatusFound)
+					return
+				}
+			}
+		} else {
+			// Save current query params to cookie using url.Values for safe encoding
+			http.SetCookie(w, &http.Cookie{
+				Name:    "strings_filter",
+				Value:   url.QueryEscape(r.URL.RawQuery),
+				Path:    "/",
+				Expires: time.Now().Add(30 * 24 * time.Hour),
+			})
+		}
 
 		// Pagination parameters
 		pageStr := r.URL.Query().Get("page")
@@ -31,17 +52,18 @@ func StringsList(deps *app.App) http.HandlerFunc {
 		}
 
 		offset := (page - 1) * perPage
-		query := strings.ToLower(r.URL.Query().Get("q"))
+		sourceQuery := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("q")))
+		targetQuery := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("qt")))
 		status := strings.ToLower(r.URL.Query().Get("status"))
 		sortParam := r.URL.Query().Get("sort")
 
-		totalItems, err := db.CountStrings(deps.DB, activeProject.ID, query, status)
+		totalItems, err := db.CountStrings(deps.DB, activeProject.ID, sourceQuery, targetQuery, status)
 		if err != nil {
 			http.Error(w, "DB error counting", http.StatusInternalServerError)
 			return
 		}
 
-		strs, err := db.GetStringsPaginated(deps.DB, activeProject.ID, query, status, sortParam, perPage, offset)
+		strs, err := db.GetStringsPaginated(deps.DB, activeProject.ID, sourceQuery, targetQuery, status, sortParam, perPage, offset)
 		if err != nil {
 			http.Error(w, "DB error fetching", http.StatusInternalServerError)
 			return
@@ -51,7 +73,8 @@ func StringsList(deps *app.App) http.HandlerFunc {
 
 		render.HTML(w, http.StatusOK, "strings_list.html", map[string]interface{}{
 			"Strings":       strs,
-			"Query":         query,
+			"Query":         sourceQuery,
+			"QueryTarget":   targetQuery,
 			"Status":        status,
 			"Sort":          sortParam,
 			"Page":          page,
@@ -146,14 +169,30 @@ func StringDetails(deps *app.App) http.HandlerFunc {
 			revisions, _ = db.GetRevisionsForTranslation(deps.DB, translations[0].ID)
 		}
 
+		var filterQuery string
+		if c, err := r.Cookie("strings_filter"); err == nil && c.Value != "" {
+			if restored, err := url.QueryUnescape(c.Value); err == nil {
+				filterQuery = restored
+			}
+		}
+
+		// Fetch users for rendering avatars
+		users, _ := db.GetAllUsers(deps.DB)
+		usersMap := make(map[int]db.User)
+		for _, u := range users {
+			usersMap[u.ID] = u
+		}
+
 		render.HTML(w, http.StatusOK, "string_detail.html", map[string]interface{}{
 			"String":        str,
 			"Translations":  translations,
 			"Revisions":     revisions,
 			"Comments":      comments,
+			"FilterQuery":   filterQuery,
 			"Me":            user,
 			"ActiveProject": activeProject,
 			"UserProjects":  GetUserProjectsFromContext(r.Context()),
+			"UsersMap":      usersMap,
 		})
 	}
 }

@@ -38,19 +38,24 @@ func GetAllStrings(db *sql.DB, projectID int) ([]String, error) {
 	return strings, nil
 }
 
-func CountStrings(db *sql.DB, projectID int, query, status string) (int, error) {
+func CountStrings(db *sql.DB, projectID int, sourceQuery, targetQuery, status string) (int, error) {
 	q := `SELECT COUNT(*) FROM strings s`
 
-	if status != "" || query != "" {
+	if status != "" || sourceQuery != "" || targetQuery != "" {
 		q += ` LEFT JOIN translations t ON s.id = t.string_id AND t.locale = 'target'`
 	}
 
 	q += ` WHERE s.project_id = ?`
 	args := []interface{}{projectID}
 
-	if query != "" {
-		q += ` AND (LOWER(s.source_text) LIKE ? OR LOWER(t.current_text) LIKE ?)`
-		args = append(args, "%"+query+"%", "%"+query+"%")
+	if sourceQuery != "" {
+		q += ` AND (LOWER(s.source_text) LIKE ? OR LOWER(s.` + "`key`" + `) LIKE ?)`
+		args = append(args, "%"+sourceQuery+"%", "%"+sourceQuery+"%")
+	}
+
+	if targetQuery != "" {
+		q += ` AND LOWER(t.current_text) LIKE ?`
+		args = append(args, "%"+targetQuery+"%")
 	}
 
 	if status != "" {
@@ -67,7 +72,7 @@ func CountStrings(db *sql.DB, projectID int, query, status string) (int, error) 
 	return count, err
 }
 
-func GetStringsPaginated(db *sql.DB, projectID int, query, status, sort string, limit, offset int) ([]StringWithTranslation, error) {
+func GetStringsPaginated(db *sql.DB, projectID int, sourceQuery, targetQuery, status, sort string, limit, offset int) ([]StringWithTranslation, error) {
 	q := `
 		SELECT 
 			s.id, s.project_id, s.key, s.source_text, s.context, s.created_at, s.updated_at,
@@ -79,9 +84,14 @@ func GetStringsPaginated(db *sql.DB, projectID int, query, status, sort string, 
 	`
 	args := []interface{}{projectID}
 
-	if query != "" {
-		q += ` AND (LOWER(s.source_text) LIKE ? OR LOWER(t.current_text) LIKE ?)`
-		args = append(args, "%"+query+"%", "%"+query+"%")
+	if sourceQuery != "" {
+		q += ` AND (LOWER(s.source_text) LIKE ? OR LOWER(s.` + "`key`" + `) LIKE ?)`
+		args = append(args, "%"+sourceQuery+"%", "%"+sourceQuery+"%")
+	}
+
+	if targetQuery != "" {
+		q += ` AND LOWER(t.current_text) LIKE ?`
+		args = append(args, "%"+targetQuery+"%")
 	}
 
 	if status != "" {

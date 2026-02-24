@@ -7,8 +7,9 @@
     <div class="col-12">
         <div class="card shadow-sm">
             <div class="card-body">
-                <form method="GET" action="/strings" class="d-flex gap-2 align-items-center">
-                    <input type="text" name="q" class="form-control" placeholder="Search source or translated text..." value="{{.Query}}">
+                <form method="GET" action="/strings" class="d-flex gap-2 align-items-center flex-wrap">
+                    <input type="text" name="q" class="form-control" style="max-width: 250px;" placeholder="Search source text..." value="{{.Query}}">
+                    <input type="text" name="qt" class="form-control" style="max-width: 250px;" placeholder="Search translated text..." value="{{.QueryTarget}}">
                     <select name="status" class="form-select" style="max-width: 150px;" onchange="this.form.submit()">
                         <option value="">Any Status</option>
                         <option value="todo" {{if eq .Status "todo"}}selected{{end}}>Todo</option>
@@ -21,8 +22,8 @@
                         <option value="comments_desc" {{if eq .Sort "comments_desc"}}selected{{end}}>Sort: Most Comments</option>
                     </select>
                     <input type="hidden" name="per_page" value="{{.PerPage}}">
-                    <button type="submit" class="btn btn-primary px-4">Search & Filter</button>
-                    {{if or .Query .Status}}<a href="/strings?per_page={{.PerPage}}" class="btn btn-outline-danger">Clear</a>{{end}}
+                    <button type="submit" class="btn btn-primary px-4">Search &amp; Filter</button>
+                    {{if or .Query .QueryTarget .Status}}<a href="/strings?per_page={{.PerPage}}" class="btn btn-outline-danger">Clear</a>{{end}}
                 </form>
             </div>
         </div>
@@ -127,7 +128,7 @@
     <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3 border-top">
         <div class="d-flex align-items-center gap-2">
             <span class="text-muted small">Show</span>
-            <select class="form-select form-select-sm" style="width: 70px;" onchange="window.location.href='/strings?page=1&q={{.Query}}&status={{.Status}}&sort={{.Sort}}&per_page='+this.value">
+            <select class="form-select form-select-sm" style="width: 70px;" onchange="window.location.href='/strings?page=1&q={{.Query}}&qt={{.QueryTarget}}&status={{.Status}}&sort={{.Sort}}&per_page='+this.value">
                 <option value="25" {{if eq .PerPage 25}}selected{{end}}>25</option>
                 <option value="50" {{if eq .PerPage 50}}selected{{end}}>50</option>
                 <option value="100" {{if eq .PerPage 100}}selected{{end}}>100</option>
@@ -139,14 +140,14 @@
         <nav aria-label="Page navigation">
             <ul class="pagination pagination-sm mb-0">
                 <li class="page-item {{if le .Page 1}}disabled{{end}}">
-                    <a class="page-link" href="/strings?page={{with $p := .Page}}{{if gt $p 1}}{{sub $p 1}}{{else}}1{{end}}{{end}}&q={{.Query}}&status={{.Status}}&sort={{.Sort}}&per_page={{.PerPage}}">Prev</a>
+                    <a class="page-link" href="/strings?page={{with $p := .Page}}{{if gt $p 1}}{{sub $p 1}}{{else}}1{{end}}{{end}}&q={{.Query}}&qt={{.QueryTarget}}&status={{.Status}}&sort={{.Sort}}&per_page={{.PerPage}}">Prev</a>
                 </li>
                 
                 {{/* A simple loop is hard in pure text/template, so we use a pragmatic approach for MVP */}}
                 <li class="page-item active"><a class="page-link" href="#">Page {{.Page}} of {{.TotalPages}}</a></li>
                 
                 <li class="page-item {{if ge .Page .TotalPages}}disabled{{end}}">
-                    <a class="page-link" href="/strings?page={{with $p := .Page}}{{if lt $p $.TotalPages}}{{add $p 1}}{{else}}{{$p}}{{end}}{{end}}&q={{.Query}}&status={{.Status}}&sort={{.Sort}}&per_page={{.PerPage}}">Next</a>
+                    <a class="page-link" href="/strings?page={{with $p := .Page}}{{if lt $p $.TotalPages}}{{add $p 1}}{{else}}{{$p}}{{end}}{{end}}&q={{.Query}}&qt={{.QueryTarget}}&status={{.Status}}&sort={{.Sort}}&per_page={{.PerPage}}">Next</a>
                 </li>
             </ul>
         </nav>

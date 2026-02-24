@@ -1,10 +1,12 @@
 package render
 
 import (
+	"crypto/md5"
 	"fmt"
 	"html/template"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -23,6 +25,20 @@ func LoadTemplates(pattern string) error {
 				return def
 			}
 			return val
+		},
+		"gravatarURL": func(email string) string {
+			if email == "" {
+				return "https://www.gravatar.com/avatar/00000000000000000000000000000000?s=32&d=mp"
+			}
+			email = strings.ToLower(strings.TrimSpace(email))
+			hash := md5.Sum([]byte(email))
+			return fmt.Sprintf("https://www.gravatar.com/avatar/%x?s=32&d=identicon", hash)
+		},
+		"int": func(p *int) int {
+			if p == nil {
+				return 0
+			}
+			return *p
 		},
 		"formatUser": func(id *int) string {
 			if id == nil {
