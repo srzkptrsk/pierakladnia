@@ -2,6 +2,8 @@ package db
 
 import (
 	"database/sql"
+	"strconv"
+	"strings"
 )
 
 func CreateString(db *sql.DB, projectID int, key, sourceText, contextStr string) (int, error) {
@@ -38,7 +40,58 @@ func GetAllStrings(db *sql.DB, projectID int) ([]String, error) {
 	return strings, nil
 }
 
-func CountStrings(db *sql.DB, projectID int, sourceQuery, targetQuery, status string) (int, error) {
+func applyIDFilter(q *string, args *[]interface{}, idFilter string) {
+	if idFilter == "" {
+		return
+	}
+	idFilter = strings.ReplaceAll(idFilter, " ", "")
+	if strings.HasPrefix(idFilter, ">=") {
+		if val, err := strconv.Atoi(idFilter[2:]); err == nil {
+			*q += ` AND s.id >= ?`
+			*args = append(*args, val)
+		}
+	} else if strings.HasPrefix(idFilter, "<=") {
+		if val, err := strconv.Atoi(idFilter[2:]); err == nil {
+			*q += ` AND s.id <= ?`
+			*args = append(*args, val)
+		}
+	} else if strings.HasPrefix(idFilter, ">") {
+		if val, err := strconv.Atoi(idFilter[1:]); err == nil {
+			*q += ` AND s.id > ?`
+			*args = append(*args, val)
+		}
+	} else if strings.HasPrefix(idFilter, "<") {
+		if val, err := strconv.Atoi(idFilter[1:]); err == nil {
+			*q += ` AND s.id < ?`
+			*args = append(*args, val)
+		}
+	} else if strings.Contains(idFilter, "-") {
+		parts := strings.Split(idFilter, "-")
+		if len(parts) == 2 {
+			if val1, err1 := strconv.Atoi(parts[0]); err1 == nil {
+				if val2, err2 := strconv.Atoi(parts[1]); err2 == nil {
+					*q += ` AND s.id BETWEEN ? AND ?`
+					*args = append(*args, val1, val2)
+				}
+			}
+		}
+	} else if strings.Contains(idFilter, ",") {
+		var ids []string
+		for _, p := range strings.Split(idFilter, ",") {
+			if _, err := strconv.Atoi(p); err == nil {
+				ids = append(ids, p)
+			}
+		}
+		if len(ids) > 0 {
+			*q += ` AND s.id IN (` + strings.Join(ids, ",") + `)`
+		}
+	} else if val, err := strconv.Atoi(idFilter); err == nil {
+		*q += ` AND s.id = ?`
+		*args = append(*args, val)
+	}
+}
+
+func CountStrings(db *sql.DB, projectID int, sourceQuery, targetQuery, status, idFilter string) (int, error) {
 	q := `SELECT COUNT(*) FROM strings s`
 
 	if status != "" || sourceQuery != "" || targetQuery != "" {
@@ -67,12 +120,14 @@ func CountStrings(db *sql.DB, projectID int, sourceQuery, targetQuery, status st
 		}
 	}
 
+	applyIDFilter(&q, &args, idFilter)
+
 	var count int
 	err := db.QueryRow(q, args...).Scan(&count)
 	return count, err
 }
 
-func GetStringsPaginated(db *sql.DB, projectID int, sourceQuery, targetQuery, status, sort string, limit, offset int) ([]StringWithTranslation, error) {
+func GetStringsPaginated(db *sql.DB, projectID int, sourceQuery, targetQuery, status, sort, idFilter string, limit, offset int) ([]StringWithTranslation, error) {
 	q := `
 		SELECT 
 			s.id, s.project_id, s.key, s.source_text, s.context, s.created_at, s.updated_at,
@@ -102,6 +157,8 @@ func GetStringsPaginated(db *sql.DB, projectID int, sourceQuery, targetQuery, st
 			args = append(args, status)
 		}
 	}
+
+	applyIDFilter(&q, &args, idFilter)
 
 	if sort == "comments_desc" {
 		q += ` ORDER BY comments_count DESC, s.id ASC LIMIT ? OFFSET ?`

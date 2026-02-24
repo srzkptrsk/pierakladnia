@@ -56,14 +56,15 @@ func StringsList(deps *app.App) http.HandlerFunc {
 		targetQuery := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("qt")))
 		status := strings.ToLower(r.URL.Query().Get("status"))
 		sortParam := r.URL.Query().Get("sort")
+		idFilter := strings.TrimSpace(r.URL.Query().Get("id_filter"))
 
-		totalItems, err := db.CountStrings(deps.DB, activeProject.ID, sourceQuery, targetQuery, status)
+		totalItems, err := db.CountStrings(deps.DB, activeProject.ID, sourceQuery, targetQuery, status, idFilter)
 		if err != nil {
 			http.Error(w, "DB error counting", http.StatusInternalServerError)
 			return
 		}
 
-		strs, err := db.GetStringsPaginated(deps.DB, activeProject.ID, sourceQuery, targetQuery, status, sortParam, perPage, offset)
+		strs, err := db.GetStringsPaginated(deps.DB, activeProject.ID, sourceQuery, targetQuery, status, sortParam, idFilter, perPage, offset)
 		if err != nil {
 			http.Error(w, "DB error fetching", http.StatusInternalServerError)
 			return
@@ -77,6 +78,7 @@ func StringsList(deps *app.App) http.HandlerFunc {
 			"QueryTarget":   targetQuery,
 			"Status":        status,
 			"Sort":          sortParam,
+			"IDFilter":      idFilter,
 			"Page":          page,
 			"PerPage":       perPage,
 			"TotalPages":    totalPages,
