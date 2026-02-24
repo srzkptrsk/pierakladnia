@@ -1,0 +1,16 @@
+[Unit]
+Description=Pierakladnia Translation App
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/home/ec2-user/pierakladnia
+ExecStart=/home/ec2-user/pierakladnia/bin/pierakladnia
+Environment=APP_CONFIG=/home/ec2-user/pierakladnia/config/config.local.json
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

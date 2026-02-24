@@ -1,0 +1,63 @@
+{{template "layout.html" .}}
+
+{{define "title"}}Glossary - Pierakladnia{{end}}
+
+{{define "content"}}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <form method="GET" action="/glossary" class="d-flex gap-2 align-items-center mb-0">
+                    <select name="category" class="form-select">
+                        <option value="">All Categories</option>
+                        <option value="character" {{if eq .Category "character"}}selected{{end}}>Character</option>
+                        <option value="place" {{if eq .Category "place"}}selected{{end}}>Place</option>
+                        <option value="item" {{if eq .Category "item"}}selected{{end}}>Item</option>
+                        <option value="term" {{if eq .Category "term"}}selected{{end}}>Term</option>
+                        <option value="other" {{if eq .Category "other"}}selected{{end}}>Other</option>
+                    </select>
+                    <button type="submit" class="btn btn-secondary px-4">Filter</button>
+                    {{if .Category}}<a href="/glossary" class="btn btn-outline-danger">Clear</a>{{end}}
+                </form>
+                {{if or .Me.CanTranslate (eq .Me.Role "admin")}}
+                <a href="/glossary/new" class="btn btn-success">+ Add Term</a>
+                {{end}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h4 class="mb-0">Glossary</h4>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 25%;">Source Term</th>
+                        <th style="width: 25%;">Target Term</th>
+                        <th style="width: 20%;">Category</th>
+                        <th style="width: 15%;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {{range .Terms}}
+                    <tr>
+                        <td><strong>{{.SourceTerm}}</strong></td>
+                        <td>{{.TargetTerm}}</td>
+                        <td><span class="badge bg-secondary text-capitalize">{{.Category}}</span></td>
+                        <td>
+                            <a href="/glossary/{{.ID}}" class="btn btn-sm btn-outline-primary">View / Edit</a>
+                        </td>
+                    </tr>
+                {{else}}
+                    <tr><td colspan="4" class="text-center py-4 text-muted">No glossary terms found.</td></tr>
+                {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{{end}}

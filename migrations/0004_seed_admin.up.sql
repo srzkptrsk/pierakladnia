@@ -1,0 +1,2 @@
+-- Admin users are now created via CLI: go run ./cmd/admin create-admin --email <email> --password <password>
+-- This migration is intentionally left empty.

@@ -1,0 +1,33 @@
+{{template "layout.html" .}}
+
+{{define "title"}}Register - Pierakladnia{{end}}
+
+{{define "content"}}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Register</h4>
+            </div>
+            <div class="card-body">
+                {{if .Error}}<div class="alert alert-danger" role="alert">{{.Error}}</div>{{end}}
+                
+                <form method="POST" action="/register">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Password (min 6 chars)</label>
+                        <input type="password" class="form-control" id="password" name="password" minlength="6" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Register</button>
+                </form>
+                <div class="text-center mt-3">
+                    <a href="/login" class="text-decoration-none">Already have an account? Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

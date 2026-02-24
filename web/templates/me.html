@@ -1,0 +1,27 @@
+{{template "layout.html" .}}
+
+{{define "title"}}My Profile - Pierakladnia{{end}}
+
+{{define "content"}}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">My Profile</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Email:</strong> {{.User.Email}}</p>
+                <p><strong>Role:</strong> <span class="badge bg-secondary text-capitalize">{{.User.Role}}</span></p>
+                <p><strong>Can Translate:</strong> 
+                    {{if .User.CanTranslate}}
+                        <span class="badge bg-success">Yes</span>
+                    {{else}}
+                        <span class="badge bg-danger">No (Request admin approval)</span>
+                    {{end}}
+                </p>
+                <p><strong>Joined:</strong> {{formatDate .User.CreatedAt}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

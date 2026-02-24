@@ -1,0 +1,22 @@
+# Build artifacts
+dist/
+
+# Config with secrets
+config/config.local.json
+
+# Go binaries
+bin/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env

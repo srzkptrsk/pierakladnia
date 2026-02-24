@@ -1,0 +1,156 @@
+{{template "layout.html" .}}
+
+{{define "title"}}String Detail - Pierakladnia{{end}}
+
+{{define "content"}}
+<div class="mb-3">
+    <a href="/strings" class="btn btn-outline-secondary btn-sm">&larr; Back to Strings</a>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Source String #{{.String.ID}}</h5>
+    </div>
+    <div class="card-body">
+        {{if .String.Key}}<p class="mb-2"><strong>Key:</strong> <span class="font-monospace">{{.String.Key}}</span></p>{{end}}
+        
+        <div class="p-3 bg-light border-start border-4 border-primary rounded my-3 fs-5">
+            {{.String.SourceText}}
+        </div>
+        
+        <div class="row mt-3">
+            <div class="col-12">
+                <form method="POST" action="/strings/{{.String.ID}}/context">
+                    <label class="form-label fw-bold">Context:</label>
+                    {{if or .Me.CanTranslate (eq .Me.Role "admin")}}
+                        <textarea name="context" class="form-control" rows="2" placeholder="Provide background hints for translators...">{{.String.Context}}</textarea>
+                        <button type="submit" class="btn btn-sm btn-outline-secondary mt-2">Update Context</button>
+                    {{else}}
+                        <div class="p-2 bg-white border rounded text-muted">
+                            {{if .String.Context}}{{.String.Context}}{{else}}<em class="small">No context provided.</em>{{end}}
+                        </div>
+                    {{end}}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Translation (Target)</h5>
+        
+        {{ $currentTranslation := "" }}
+        {{ $currentStatus := "todo" }}
+    
+        {{if .Translations}}
+            {{with index .Translations 0}}
+                {{ $currentTranslation = .CurrentText }}
+                {{ $currentStatus = .Status }}
+            {{end}}
+        {{end}}
+
+        <div class="d-flex align-items-center">
+            <span class="me-2">Status:</span>
+            {{if or .Me.CanTranslate (eq .Me.Role "admin")}}
+            <form method="POST" action="/translations/status" class="m-0">
+                <input type="hidden" name="string_id" value="{{.String.ID}}">
+                <input type="hidden" name="locale" value="target">
+                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="todo" {{if eq $currentStatus "todo"}}selected{{end}}>Todo</option>
+                    <option value="draft" {{if eq $currentStatus "draft"}}selected{{end}}>Draft</option>
+                    <option value="needs_review" {{if eq $currentStatus "needs_review"}}selected{{end}}>Needs Review</option>
+                    <option value="done" {{if eq $currentStatus "done"}}selected{{end}}>Done</option>
+                </select>
+            </form>
+            {{else}}
+            <span class="badge {{if eq $currentStatus "done"}}bg-success{{else if eq $currentStatus "draft"}}bg-warning{{else if eq $currentStatus "needs_review"}}bg-info{{else}}bg-secondary{{end}} text-capitalize">
+                {{$currentStatus}}
+            </span>
+            {{end}}
+        </div>
+    </div>
+    <div class="card-body">
+        {{if or .Me.CanTranslate (eq .Me.Role "admin")}}
+            <form method="POST" action="/strings/{{.String.ID}}">
+                <input type="hidden" name="locale" value="target">
+                <div class="mb-3">
+                    <textarea class="form-control" name="translation" rows="5" required placeholder="Enter translation here...">{{$currentTranslation}}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Translation</button>
+            </form>
+        {{else}}
+            <div class="p-3 bg-light rounded mb-3">
+                {{if $currentTranslation}}{{$currentTranslation}}{{else}}<em class="text-muted">No translation yet.</em>{{end}}
+            </div>
+            <div class="alert alert-warning mb-0 pb-2 pt-2">
+                <small>You do not have permission to edit translations.</small>
+            </div>
+        {{end}}
+    </div>
+</div>
+
+{{if .Revisions}}
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Revision History</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-sm table-striped mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 180px;">Date</th>
+                        <th style="width: 100px;">User ID</th>
+                        <th style="width: 35%;">Old Text</th>
+                        <th style="width: 35%;">New Text</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {{range .Revisions}}
+                    <tr>
+                        <td><small>{{formatDate .ChangedAt}}</small></td>
+                        <td><small>{{formatUser .ChangedBy}}</small></td>
+                        <td><small class="text-danger">{{.OldText}}</small></td>
+                        <td><small class="text-success">{{.NewText}}</small></td>
+                    </tr>
+                {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{{end}}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Comments</h5>
+    </div>
+    <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+            {{range .Comments}}
+            <li class="list-group-item py-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <strong>{{.AuthorEmail}}</strong>
+                    <small class="text-muted">{{formatDate .CreatedAt}}</small>
+                </div>
+                <p class="mb-0">{{.Content}}</p>
+            </li>
+            {{else}}
+            <li class="list-group-item text-muted py-3">No comments yet.</li>
+            {{end}}
+        </ul>
+    </div>
+    <div class="card-footer bg-light p-3">
+        <h6>Add Comment</h6>
+        <form method="POST" action="/comments">
+            <input type="hidden" name="entity_type" value="translation">
+            <input type="hidden" name="entity_id" value="{{.String.ID}}">
+            <div class="mb-2">
+                <textarea class="form-control" name="content" rows="2" required placeholder="Write a comment..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-sm btn-secondary">Post Comment</button>
+        </form>
+    </div>
+</div>
+{{end}}

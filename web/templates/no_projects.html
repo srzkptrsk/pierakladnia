@@ -1,0 +1,18 @@
+{{template "layout.html" .}}
+
+{{define "title"}}No Projects - Pierakladnia{{end}}
+
+{{define "content"}}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm text-center">
+            <div class="card-body py-5">
+                <i class="bi bi-folder-x text-muted" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">No Projects Assigned</h4>
+                <p class="text-muted mb-4">You don't have any projects assigned to your account yet.<br>Please contact an administrator to get access.</p>
+                <a href="/logout" class="btn btn-outline-secondary">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

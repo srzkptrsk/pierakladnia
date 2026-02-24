@@ -1,0 +1,20 @@
+{
+  "http": {
+    "addr": ":8080",
+    "base_url": "http://localhost:8080"
+  },
+  "db": {
+    "dsn": "app:app_password@tcp(127.0.0.1:3306)/gob_trans?parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci"
+  },
+  "auth": {
+    "cookie_name": "gob_session",
+    "cookie_secret": "32_BYTES_RANDOM_SECRET_CHANGE_ME_PLEASE",
+    "session_ttl_hours": 168
+  },
+  "ses": {
+    "region": "eu-central-1",
+    "from_email": "noreply@example.com",
+    "access_key_id": "YOUR_AWS_ACCESS_KEY_ID",
+    "secret_access_key": "YOUR_AWS_SECRET_ACCESS_KEY"
+  }
+}

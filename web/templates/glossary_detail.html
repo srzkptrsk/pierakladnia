@@ -1,0 +1,88 @@
+{{template "layout.html" .}}
+
+{{define "title"}}{{if .Term}}Edit Term{{else}}New Term{{end}} - Pierakladnia{{end}}
+
+{{define "content"}}
+<div class="mb-3">
+    <a href="/glossary" class="btn btn-outline-secondary btn-sm">&larr; Back to Glossary</a>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h4 class="mb-0">{{if .Term}}Edit Term{{else}}New Term{{end}}</h4>
+    </div>
+    <div class="card-body">
+        {{ $isEditable := or .Me.CanTranslate (eq .Me.Role "admin") }}
+
+        <form method="POST" action="{{if .Term}}/glossary/{{.Term.ID}}{{else}}/glossary/new{{end}}">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Category</label>
+                    <select class="form-select" name="category" {{if not $isEditable}}disabled{{end}}>
+                        {{$cat := ""}}
+                        {{if .Term}}{{$cat = .Term.Category}}{{end}}
+                        <option value="character" {{if eq $cat "character"}}selected{{end}}>Character</option>
+                        <option value="place" {{if eq $cat "place"}}selected{{end}}>Place</option>
+                        <option value="item" {{if eq $cat "item"}}selected{{end}}>Item</option>
+                        <option value="term" {{if eq $cat "term"}}selected{{end}}>Term</option>
+                        <option value="other" {{if eq $cat "other"}}selected{{end}}>Other</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Source Term</label>
+                    <input type="text" class="form-control" name="source_term" value="{{if .Term}}{{.Term.SourceTerm}}{{end}}" required {{if not $isEditable}}readonly{{end}}>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Target Term</label>
+                    <input type="text" class="form-control" name="target_term" value="{{if .Term}}{{.Term.TargetTerm}}{{end}}" required {{if not $isEditable}}readonly{{end}}>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold">Description / Context</label>
+                <textarea class="form-control" name="description" rows="4" {{if not $isEditable}}readonly{{end}}>{{if .Term}}{{if .Term.Description}}{{.Term.Description}}{{end}}{{end}}</textarea>
+            </div>
+
+            {{if $isEditable}}
+            <button type="submit" class="btn btn-primary">Save Term</button>
+            {{end}}
+        </form>
+    </div>
+</div>
+
+{{if .Term}}
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Discussion</h5>
+    </div>
+    <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+            {{range .Comments}}
+            <li class="list-group-item py-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <strong>{{.AuthorEmail}}</strong>
+                    <small class="text-muted">{{formatDate .CreatedAt}}</small>
+                </div>
+                <p class="mb-0">{{.Content}}</p>
+            </li>
+            {{else}}
+            <li class="list-group-item text-muted py-3">No comments yet.</li>
+            {{end}}
+        </ul>
+    </div>
+    <div class="card-footer bg-light p-3">
+        <h6>Add Comment</h6>
+        <form method="POST" action="/comments">
+            <input type="hidden" name="entity_type" value="glossary_term">
+            <input type="hidden" name="entity_id" value="{{.Term.ID}}">
+            <div class="mb-2">
+                <textarea class="form-control" name="content" rows="2" required placeholder="Write a comment..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-sm btn-secondary">Post</button>
+        </form>
+    </div>
+</div>
+{{end}}
+{{end}}
