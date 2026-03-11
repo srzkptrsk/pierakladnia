@@ -342,3 +342,34 @@ func GetAllStringsForExport(db *sql.DB, projectID int) (map[string]string, error
 	}
 	return result, nil
 }
+
+func GetAllStringsWithTranslationsForExportPO(db *sql.DB, projectID int) ([]StringWithTranslation, error) {
+	q := `
+		SELECT 
+			s.id, s.project_id, s.key, s.source_text, s.context, s.created_at, s.updated_at,
+			t.id as target_translation_id, t.current_text as target_translation_text, t.status as target_translation_status,
+			0 as comments_count
+		FROM strings s
+		LEFT JOIN translations t ON s.id = t.string_id AND t.locale = 'target'
+		WHERE s.project_id = ?
+		ORDER BY s.id ASC
+	`
+	rows, err := db.Query(q, projectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var stringsSlice []StringWithTranslation
+	for rows.Next() {
+		var s StringWithTranslation
+		if err := rows.Scan(
+			&s.ID, &s.ProjectID, &s.Key, &s.SourceText, &s.Context, &s.CreatedAt, &s.UpdatedAt,
+			&s.TargetTranslationID, &s.TargetTranslationText, &s.TargetTranslationStatus, &s.CommentsCount,
+		); err != nil {
+			return nil, err
+		}
+		stringsSlice = append(stringsSlice, s)
+	}
+	return stringsSlice, nil
+}

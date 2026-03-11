@@ -69,6 +69,7 @@ func NewRouter(deps *app.App) http.Handler {
 	mux.Handle("/admin/projects/edit", RequireAdmin(deps, http.HandlerFunc(handlers.AdminProjectsEdit(deps))))
 	mux.Handle("/admin/projects/assign", RequireAdmin(deps, http.HandlerFunc(handlers.AdminProjectsAssignUser(deps))))
 	mux.Handle("/admin/strings/export", RequireAuth(deps, http.HandlerFunc(handlers.AdminStringsExport(deps))))
+	mux.Handle("/admin/strings/export/po", RequireAuth(deps, http.HandlerFunc(handlers.AdminStringsExportPO(deps))))
 	mux.Handle("/admin/strings/import", RequireAdmin(deps, http.HandlerFunc(handlers.AdminStringsImport(deps))))
 
 	// Apply global middleware (logging, etc)

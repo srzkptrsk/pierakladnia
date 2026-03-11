@@ -308,3 +308,50 @@ func AdminStringsExport(deps *app.App) http.HandlerFunc {
 		w.Write(jsonBytes)
 	}
 }
+
+func AdminStringsExportPO(deps *app.App) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		activeProject := GetActiveProjectFromContext(r.Context())
+		if activeProject == nil {
+			http.Error(w, "No active project", http.StatusBadRequest)
+			return
+		}
+
+		stringsData, err := db.GetAllStringsWithTranslationsForExportPO(deps.DB, activeProject.ID)
+		if err != nil {
+			http.Error(w, "DB error: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "text/x-gettext-translation; charset=utf-8")
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s_strings_export.po\"", activeProject.Name))
+
+		var sb strings.Builder
+		sb.WriteString("msgid \"\"\n")
+		sb.WriteString("msgstr \"\"\n")
+		sb.WriteString("\"Project-Id-Version: " + activeProject.Name + "\\n\"\n")
+		sb.WriteString("\"Content-Type: text/plain; charset=UTF-8\\n\"\n")
+		sb.WriteString("\"Content-Transfer-Encoding: 8bit\\n\"\n\n")
+
+		for _, s := range stringsData {
+			if s.Context != nil && *s.Context != "" {
+				sb.WriteString(fmt.Sprintf("msgctxt %q\n", *s.Context))
+			}
+			sb.WriteString(fmt.Sprintf("msgid %q\n", s.SourceText))
+			
+			if s.TargetTranslationText != nil && *s.TargetTranslationText != "" {
+				sb.WriteString(fmt.Sprintf("msgstr %q\n", *s.TargetTranslationText))
+			} else {
+				sb.WriteString("msgstr \"\"\n")
+			}
+			sb.WriteString("\n")
+		}
+
+		w.Write([]byte(sb.String()))
+	}
+}
