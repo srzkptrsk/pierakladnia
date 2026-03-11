@@ -303,8 +303,13 @@ func AdminStringsExport(deps *app.App) http.HandlerFunc {
 			return
 		}
 
+		filename := activeProject.ExportFilename
+		if filename == "" {
+			filename = activeProject.Name
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s_strings_export.json\"", activeProject.Name))
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s_strings_export.json\"", filename))
 		w.Write(jsonBytes)
 	}
 }
@@ -328,13 +333,40 @@ func AdminStringsExportPO(deps *app.App) http.HandlerFunc {
 			return
 		}
 
+		filename := activeProject.ExportFilename
+		if filename == "" {
+			filename = activeProject.Name
+		}
+
 		w.Header().Set("Content-Type", "text/x-gettext-translation; charset=utf-8")
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s_strings_export.po\"", activeProject.Name))
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s_strings_export.po\"", filename))
 
 		var sb strings.Builder
 		sb.WriteString("msgid \"\"\n")
 		sb.WriteString("msgstr \"\"\n")
-		sb.WriteString("\"Project-Id-Version: " + activeProject.Name + "\\n\"\n")
+		
+		projIdVer := activeProject.PoProjectIdVersion
+		if projIdVer == "" {
+			projIdVer = activeProject.Name
+		}
+		sb.WriteString("\"Project-Id-Version: " + projIdVer + "\\n\"\n")
+
+		if activeProject.PoReportMsgidBugsTo != "" {
+			sb.WriteString(fmt.Sprintf("\"Report-Msgid-Bugs-To: %s\\n\"\n", activeProject.PoReportMsgidBugsTo))
+		}
+
+		if activeProject.PoLastTranslator != "" {
+			sb.WriteString(fmt.Sprintf("\"Last-Translator: %s\\n\"\n", activeProject.PoLastTranslator))
+		}
+
+		if activeProject.PoLanguageTeam != "" {
+			sb.WriteString(fmt.Sprintf("\"Language-Team: %s\\n\"\n", activeProject.PoLanguageTeam))
+		}
+
+		if activeProject.PoLanguage != "" {
+			sb.WriteString(fmt.Sprintf("\"Language: %s\\n\"\n", activeProject.PoLanguage))
+		}
+
 		sb.WriteString("\"Content-Type: text/plain; charset=UTF-8\\n\"\n")
 		sb.WriteString("\"Content-Transfer-Encoding: 8bit\\n\"\n\n")
 

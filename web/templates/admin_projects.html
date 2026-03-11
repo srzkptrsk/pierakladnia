@@ -109,6 +109,58 @@
                                                     <label for="description{{.ID}}" class="form-label">Description</label>
                                                     <textarea class="form-control" id="description{{.ID}}" name="description" rows="3">{{.Description}}</textarea>
                                                 </div>
+                                                
+                                                <h6 class="mt-4 border-bottom pb-2">Export Settings</h6>
+                                                
+                                                <div class="mb-3">
+                                                    <label for="export_filename{{.ID}}" class="form-label">Export Filename Base (No Ext)</label>
+                                                    <input type="text" class="form-control" id="export_filename{{.ID}}" name="export_filename" value="{{.ExportFilename}}" placeholder="{{.Name}}">
+                                                    <div class="form-text">Used for downloads (e.g. <code>my_file_strings_export.json</code>)</div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="po_project_id_version{{.ID}}" class="form-label">PO Project-Id-Version</label>
+                                                    <input type="text" class="form-control" id="po_project_id_version{{.ID}}" name="po_project_id_version" value="{{.PoProjectIdVersion}}">
+                                                    <div class="form-text">The name and version of the package (e.g. <code>MyProject 1.0</code>).</div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="po_report_msgid_bugs_to{{.ID}}" class="form-label">PO Report-Msgid-Bugs-To</label>
+                                                    <input type="text" class="form-control" id="po_report_msgid_bugs_to{{.ID}}" name="po_report_msgid_bugs_to" value="{{.PoReportMsgidBugsTo}}">
+                                                    <div class="form-text">Email address or URL to report translation bugs to.</div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="po_language_team{{.ID}}" class="form-label">PO Language-Team</label>
+                                                    <input type="text" class="form-control" id="po_language_team{{.ID}}" name="po_language_team" value="{{.PoLanguageTeam}}">
+                                                    <div class="form-text">Name and email of the translation team (e.g. <code>French &lt;fr@example.com&gt;</code>).</div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="po_language{{.ID}}" class="form-label">PO Language</label>
+                                                    <select class="form-select" id="po_language{{.ID}}" name="po_language">
+                                                        <option value="" {{if eq .PoLanguage ""}}selected{{end}}>None</option>
+                                                        <option value="en" {{if eq .PoLanguage "en"}}selected{{end}}>English (en)</option>
+                                                        <option value="be" {{if eq .PoLanguage "be"}}selected{{end}}>Belarusian (be)</option>
+                                                        <option value="ru" {{if eq .PoLanguage "ru"}}selected{{end}}>Russian (ru)</option>
+                                                        <option value="uk" {{if eq .PoLanguage "uk"}}selected{{end}}>Ukrainian (uk)</option>
+                                                        <option value="pl" {{if eq .PoLanguage "pl"}}selected{{end}}>Polish (pl)</option>
+                                                        <option value="de" {{if eq .PoLanguage "de"}}selected{{end}}>German (de)</option>
+                                                        <option value="fr" {{if eq .PoLanguage "fr"}}selected{{end}}>French (fr)</option>
+                                                        <option value="es" {{if eq .PoLanguage "es"}}selected{{end}}>Spanish (es)</option>
+                                                        <option value="it" {{if eq .PoLanguage "it"}}selected{{end}}>Italian (it)</option>
+                                                        <option value="zh" {{if eq .PoLanguage "zh"}}selected{{end}}>Chinese (zh)</option>
+                                                        <option value="ja" {{if eq .PoLanguage "ja"}}selected{{end}}>Japanese (ja)</option>
+                                                        <!-- Add more as needed -->
+                                                    </select>
+                                                    <div class="form-text">The target language code for this PO file (e.g. <code>be</code> for Belarusian).</div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="po_last_translator{{.ID}}" class="form-label">PO Last-Translator</label>
+                                                    <input type="text" class="form-control" id="po_last_translator{{.ID}}" name="po_last_translator" value="{{.PoLastTranslator}}">
+                                                    <div class="form-text">Name and email of the last translator (e.g. <code>Jane Doe &lt;jane@example.com&gt;</code>).</div>
+                                                </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

@@ -21,11 +21,17 @@ type Session struct {
 }
 
 type Project struct {
-	ID          int       `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID                  int       `json:"id"`
+	Name                string    `json:"name"`
+	Description         string    `json:"description"`
+	ExportFilename      string    `json:"export_filename"`
+	PoProjectIdVersion  string    `json:"po_project_id_version"`
+	PoReportMsgidBugsTo string    `json:"po_report_msgid_bugs_to"`
+	PoLanguageTeam      string    `json:"po_language_team"`
+	PoLanguage          string    `json:"po_language"`
+	PoLastTranslator    string    `json:"po_last_translator"`
+	CreatedAt           time.Time `json:"created_at"`
+	UpdatedAt           time.Time `json:"updated_at"`
 }
 
 type ProjectUser struct {

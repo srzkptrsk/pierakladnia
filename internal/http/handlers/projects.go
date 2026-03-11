@@ -69,9 +69,15 @@ func AdminProjectsEdit(deps *app.App) http.HandlerFunc {
 		projectID, _ := strconv.Atoi(r.FormValue("project_id"))
 		name := r.FormValue("name")
 		description := r.FormValue("description")
+		exportFilename := r.FormValue("export_filename")
+		poProjectIdVersion := r.FormValue("po_project_id_version")
+		poReportMsgidBugsTo := r.FormValue("po_report_msgid_bugs_to")
+		poLanguageTeam := r.FormValue("po_language_team")
+		poLanguage := r.FormValue("po_language")
+		poLastTranslator := r.FormValue("po_last_translator")
 
 		if projectID > 0 && name != "" {
-			err := db.UpdateProject(deps.DB, projectID, name, description)
+			err := db.UpdateProject(deps.DB, projectID, name, description, exportFilename, poProjectIdVersion, poReportMsgidBugsTo, poLanguageTeam, poLanguage, poLastTranslator)
 			if err != nil {
 				http.Error(w, "Failed to update project", http.StatusInternalServerError)
 				return
