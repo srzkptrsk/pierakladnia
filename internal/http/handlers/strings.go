@@ -309,7 +309,7 @@ func AdminStringsExport(deps *app.App) http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s_strings_export.json\"", filename))
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.json\"", filename))
 		w.Write(jsonBytes)
 	}
 }
@@ -339,12 +339,12 @@ func AdminStringsExportPO(deps *app.App) http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "text/x-gettext-translation; charset=utf-8")
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s_strings_export.po\"", filename))
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.po\"", filename))
 
 		var sb strings.Builder
 		sb.WriteString("msgid \"\"\n")
 		sb.WriteString("msgstr \"\"\n")
-		
+
 		projIdVer := activeProject.PoProjectIdVersion
 		if projIdVer == "" {
 			projIdVer = activeProject.Name
@@ -375,7 +375,7 @@ func AdminStringsExportPO(deps *app.App) http.HandlerFunc {
 				sb.WriteString(fmt.Sprintf("msgctxt %q\n", *s.Context))
 			}
 			sb.WriteString(fmt.Sprintf("msgid %q\n", s.SourceText))
-			
+
 			if s.TargetTranslationText != nil && *s.TargetTranslationText != "" {
 				sb.WriteString(fmt.Sprintf("msgstr %q\n", *s.TargetTranslationText))
 			} else {
