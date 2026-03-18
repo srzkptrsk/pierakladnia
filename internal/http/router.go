@@ -71,6 +71,7 @@ func NewRouter(deps *app.App) http.Handler {
 	mux.Handle("/admin/strings/export", RequireAuth(deps, http.HandlerFunc(handlers.AdminStringsExport(deps))))
 	mux.Handle("/admin/strings/export/po", RequireAuth(deps, http.HandlerFunc(handlers.AdminStringsExportPO(deps))))
 	mux.Handle("/admin/strings/import", RequireAdmin(deps, http.HandlerFunc(handlers.AdminStringsImport(deps))))
+	mux.Handle("/admin/strings/import/po", RequireAdmin(deps, http.HandlerFunc(handlers.AdminStringsImportPO(deps))))
 
 	// Apply global middleware (logging, etc)
 	return LoggingMiddleware(mux)

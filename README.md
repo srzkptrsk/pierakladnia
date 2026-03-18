@@ -19,7 +19,7 @@ A web app for collaborative game translation built with Go and MySQL.
 - **Multi-project** — work on multiple translation projects
 - **Auth** — register/login with email verification via AWS SES
 - **Access control** — admin and user roles, per-user translation permissions
-- **Import/Export** — JSON import, JSON export, and GNU gettext `.po` export
+- **Import/Export** — JSON and GNU gettext `.po` format import/export
 - **Project Export Settings** — configure per-project export filenames and `.po` header metadata
 
 ## Tech Stack
@@ -84,10 +84,17 @@ Admins can manage projects from `/admin/projects`:
 - configure export filename base for downloads
 - configure `.po` metadata such as `Project-Id-Version`, `Language`, `Language-Team`, `Last-Translator`, and `Report-Msgid-Bugs-To`
 
-## Export Formats
+## Import/Export Data
+
+### Export
 
 - `GET /admin/strings/export` downloads the active project as JSON using the configured filename base or project name
 - `GET /admin/strings/export/po` downloads the active project as a GNU gettext `.po` file with optional per-project header fields
+
+### Import (Admin only)
+
+- `POST /admin/strings/import` uploads and imports a JSON file
+- `POST /admin/strings/import/po` uploads and imports a GNU gettext `.po` file
 
 ## Production Build (linux/arm64)
 

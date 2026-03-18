@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -385,5 +386,101 @@ func AdminStringsExportPO(deps *app.App) http.HandlerFunc {
 		}
 
 		w.Write([]byte(sb.String()))
+	}
+}
+
+func AdminStringsImportPO(deps *app.App) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		user := GetUserFromContext(r.Context())
+		if user.Role != "admin" {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+
+		activeProject := GetActiveProjectFromContext(r.Context())
+		if activeProject == nil {
+			http.Error(w, "No active project", http.StatusBadRequest)
+			return
+		}
+
+		err := r.ParseMultipartForm(10 << 20) // 10 MB limit
+		if err != nil {
+			http.Error(w, "Error parsing form: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		file, _, err := r.FormFile("po_file")
+		if err != nil {
+			http.Error(w, "Error retrieving file: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		defer file.Close()
+
+		scanner := bufio.NewScanner(file)
+		var msgctxt, msgid, msgstr string
+		var state string
+
+		processEntry := func() {
+			if msgid != "" {
+				// Insert or update DB
+				stringID, err := db.CreateString(deps.DB, activeProject.ID, "", msgid, msgctxt)
+				if err == nil && msgstr != "" {
+					_ = db.UpsertTranslation(deps.DB, stringID, "target", msgstr, user.ID)
+				}
+			}
+			msgctxt, msgid, msgstr = "", "", ""
+		}
+
+		for scanner.Scan() {
+			line := strings.TrimSpace(scanner.Text())
+			if line == "" || strings.HasPrefix(line, "#") {
+				continue
+			}
+
+			if strings.HasPrefix(line, "msgctxt ") {
+				state = "msgctxt"
+				val, err := strconv.Unquote(strings.TrimSpace(line[8:]))
+				if err == nil {
+					msgctxt = val
+				}
+			} else if strings.HasPrefix(line, "msgid ") {
+				if msgid != "" && state == "msgstr" {
+					processEntry()
+				}
+				state = "msgid"
+				val, err := strconv.Unquote(strings.TrimSpace(line[6:]))
+				if err == nil {
+					msgid = val
+				}
+			} else if strings.HasPrefix(line, "msgstr ") {
+				state = "msgstr"
+				val, err := strconv.Unquote(strings.TrimSpace(line[7:]))
+				if err == nil {
+					msgstr = val
+				}
+			} else if strings.HasPrefix(line, "\"") && strings.HasSuffix(line, "\"") {
+				val, err := strconv.Unquote(line)
+				if err == nil {
+					switch state {
+					case "msgctxt":
+						msgctxt += val
+					case "msgid":
+						msgid += val
+					case "msgstr":
+						msgstr += val
+					}
+				}
+			}
+		}
+
+		// Process last entry
+		processEntry()
+
+		http.Redirect(w, r, "/strings", http.StatusFound)
 	}
 }
