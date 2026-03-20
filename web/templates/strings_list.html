@@ -41,7 +41,7 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="exportDropdown">
                     <li><a class="dropdown-item" href="/admin/strings/export">Export JSON</a></li>
-                    <li><a class="dropdown-item" href="/admin/strings/export/po">Export .PO</a></li>
+                    <li><a class="dropdown-item" href="/admin/strings/export/po">Export PO</a></li>
                 </ul>
             </div>
             
@@ -52,7 +52,7 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="importDropdown">
                     <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#importJsonModal">Import JSON</a></li>
-                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#importPoModal">Import .PO</a></li>
+                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#importPoModal">Import PO</a></li>
                 </ul>
             </div>
         </div>
@@ -90,13 +90,13 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title" id="importPoModalLabel">Import Strings from .PO</h5>
+                        <h5 class="modal-title" id="importPoModalLabel">Import Strings from PO</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form method="POST" action="/admin/strings/import/po" enctype="multipart/form-data">
                         <div class="modal-body">
                             <p class="text-muted small mb-2">
-                                Upload a standard .PO file. Text blocks will be imported for the active project.
+                                Upload a standard PO file. Text blocks will be imported for the active project.
                             </p>
                             <div class="mb-3">
                                 <label for="po_file" class="form-label">PO File</label>

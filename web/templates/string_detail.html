@@ -9,7 +9,7 @@
 
 <div class="card shadow-sm mb-4">
     <div class="card-header bg-light d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Source String #{{.String.ID}}</h5>
+        <h5 class="mb-0">Original Text</h5>
         <button class="btn btn-sm btn-outline-secondary" onclick="copyFromElement('sourceTextForCopy', this)" title="Copy Source Text">Copy</button>
     </div>
     <textarea id="sourceTextForCopy" class="d-none">{{.String.SourceText}}</textarea>
@@ -40,7 +40,7 @@
 
 <div class="card shadow-sm mb-4">
     <div class="card-header bg-light d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Translation (Target)</h5>
+        <h5 class="mb-0">Translated Text</h5>
         
         {{ $currentTranslation := "" }}
         {{ $currentStatus := "todo" }}
@@ -55,7 +55,10 @@
         <div class="d-flex align-items-center">
             <textarea id="translationTextForCopy" class="d-none">{{$currentTranslation}}</textarea>
             {{if $currentTranslation}}
-            <button class="btn btn-sm btn-outline-secondary me-3" onclick="copyFromElement('translationTextForCopy', this)" title="Copy Translation Text">Copy</button>
+            <div class="btn-group me-3">
+                <button class="btn btn-sm btn-outline-secondary" onclick="copyFromElement('translationTextForCopy', this)" title="Copy Translation Text">Copy</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="copyBothTexts(this)" title="Copy Source and Translation">Copy Both</button>
+            </div>
             {{end}}
             <span class="me-2">Status:</span>
             {{if or .Me.CanTranslate (eq .Me.Role "admin")}}
@@ -178,17 +181,34 @@ function copyFromElement(elementId, btn) {
     if (!copyText) return;
     
     navigator.clipboard.writeText(copyText.value).then(function() {
-        var originalText = btn.innerText;
-        btn.innerText = "Copied!";
-        btn.classList.remove("btn-outline-secondary");
-        btn.classList.add("btn-success");
-        setTimeout(function() {
-            btn.innerText = originalText;
-            btn.classList.remove("btn-success");
-            btn.classList.add("btn-outline-secondary");
-        }, 2000);
+        showCopiedState(btn);
     }).catch(function(err) {
         console.error('Failed to copy text: ', err);
     });
+}
+
+function copyBothTexts(btn) {
+    var sourceText = document.getElementById('sourceTextForCopy');
+    var translationText = document.getElementById('translationTextForCopy');
+    if (!sourceText || !translationText) return;
+    
+    var combinedText = sourceText.value + '\n' + translationText.value;
+    navigator.clipboard.writeText(combinedText).then(function() {
+        showCopiedState(btn);
+    }).catch(function(err) {
+        console.error('Failed to copy text: ', err);
+    });
+}
+
+function showCopiedState(btn) {
+    var originalText = btn.innerText;
+    btn.innerText = "Copied!";
+    btn.classList.remove("btn-outline-secondary");
+    btn.classList.add("btn-success");
+    setTimeout(function() {
+        btn.innerText = originalText;
+        btn.classList.remove("btn-success");
+        btn.classList.add("btn-outline-secondary");
+    }, 2000);
 }
 </script>
