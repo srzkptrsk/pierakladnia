@@ -150,7 +150,7 @@ func StringDetails(deps *app.App) http.HandlerFunc {
 			}
 			newText := r.FormValue("translation")
 
-			err = db.UpsertTranslation(deps.DB, stringID, locale, newText, user.ID)
+			err = db.UpsertTranslation(deps.DB, stringID, locale, newText, false, user.ID)
 			if err != nil {
 				http.Error(w, fmt.Sprintf("Failed to save translation: %v", err), http.StatusInternalServerError)
 				return
@@ -268,7 +268,7 @@ func AdminStringsImport(deps *app.App) http.HandlerFunc {
 
 			// Add the target translation
 			if targetText != "" {
-				err = db.UpsertTranslation(deps.DB, stringID, "target", targetText, user.ID)
+				err = db.UpsertTranslation(deps.DB, stringID, "target", targetText, true, user.ID)
 				if err != nil {
 					continue
 				}
@@ -430,7 +430,7 @@ func AdminStringsImportPO(deps *app.App) http.HandlerFunc {
 				// Insert or update DB
 				stringID, err := db.CreateString(deps.DB, activeProject.ID, "", msgid, msgctxt)
 				if err == nil && msgstr != "" {
-					_ = db.UpsertTranslation(deps.DB, stringID, "target", msgstr, user.ID)
+					_ = db.UpsertTranslation(deps.DB, stringID, "target", msgstr, true, user.ID)
 				}
 			}
 			msgctxt, msgid, msgstr = "", "", ""

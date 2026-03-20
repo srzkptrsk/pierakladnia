@@ -252,7 +252,7 @@ func GetRevisionsForTranslation(db *sql.DB, translationID int) ([]TranslationRev
 	return revisions, nil
 }
 
-func UpsertTranslation(db *sql.DB, stringID int, locale, newText string, userID int) error {
+func UpsertTranslation(db *sql.DB, stringID int, locale, newText string, isImport bool, userID int) error {
 	tx, err := db.Begin()
 	if err != nil {
 		return err
@@ -261,15 +261,19 @@ func UpsertTranslation(db *sql.DB, stringID int, locale, newText string, userID 
 
 	// Check if exists
 	var existingID int
-	var oldText string
-	err = tx.QueryRow(`SELECT id, current_text FROM translations WHERE string_id = ? AND locale = ?`, stringID, locale).Scan(&existingID, &oldText)
+	var oldText, status string
+	err = tx.QueryRow(`SELECT id, current_text, status FROM translations WHERE string_id = ? AND locale = ?`, stringID, locale).Scan(&existingID, &oldText, &status)
 
 	if err == sql.ErrNoRows {
 		// New translation
+		newStatus := "draft"
+		if isImport {
+			newStatus = "todo"
+		}
 		res, err := tx.Exec(`
-			INSERT INTO translations (string_id, locale, current_text, updated_by)
-			VALUES (?, ?, ?, ?)
-		`, stringID, locale, newText, userID)
+			INSERT INTO translations (string_id, locale, current_text, status, updated_by)
+			VALUES (?, ?, ?, ?, ?)
+		`, stringID, locale, newText, newStatus, userID)
 		if err != nil {
 			return err
 		}
@@ -284,21 +288,34 @@ func UpsertTranslation(db *sql.DB, stringID int, locale, newText string, userID 
 		}
 	} else if err != nil {
 		return err
-	} else if oldText != newText {
+	} else {
+		newStatus := status
+		if isImport {
+			newStatus = "todo"
+		} else if status == "todo" {
+			newStatus = "draft"
+		}
+		
+		if oldText == newText && newStatus == status {
+			return tx.Commit()
+		}
+
 		// Update existing
 		_, err = tx.Exec(`
-			UPDATE translations SET current_text = ?, updated_by = ? WHERE id = ?
-		`, newText, userID, existingID)
+			UPDATE translations SET current_text = ?, status = ?, updated_by = ? WHERE id = ?
+		`, newText, newStatus, userID, existingID)
 		if err != nil {
 			return err
 		}
 
-		_, err = tx.Exec(`
-			INSERT INTO translation_revisions (translation_id, old_text, new_text, changed_by)
-			VALUES (?, ?, ?, ?)
-		`, existingID, oldText, newText, userID)
-		if err != nil {
-			return err
+		if oldText != newText {
+			_, err = tx.Exec(`
+				INSERT INTO translation_revisions (translation_id, old_text, new_text, changed_by)
+				VALUES (?, ?, ?, ?)
+			`, existingID, oldText, newText, userID)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

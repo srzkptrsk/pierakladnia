@@ -8,9 +8,11 @@
 </div>
 
 <div class="card shadow-sm mb-4">
-    <div class="card-header bg-light">
+    <div class="card-header bg-light d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Source String #{{.String.ID}}</h5>
+        <button class="btn btn-sm btn-outline-secondary" onclick="copyFromElement('sourceTextForCopy', this)" title="Copy Source Text">Copy</button>
     </div>
+    <textarea id="sourceTextForCopy" class="d-none">{{.String.SourceText}}</textarea>
     <div class="card-body">
         {{if .String.Key}}<p class="mb-2"><strong>Key:</strong> <span class="font-monospace">{{.String.Key}}</span></p>{{end}}
         
@@ -51,6 +53,10 @@
         {{end}}
 
         <div class="d-flex align-items-center">
+            <textarea id="translationTextForCopy" class="d-none">{{$currentTranslation}}</textarea>
+            {{if $currentTranslation}}
+            <button class="btn btn-sm btn-outline-secondary me-3" onclick="copyFromElement('translationTextForCopy', this)" title="Copy Translation Text">Copy</button>
+            {{end}}
             <span class="me-2">Status:</span>
             {{if or .Me.CanTranslate (eq .Me.Role "admin")}}
             <form method="POST" action="/translations/status" class="m-0">
@@ -165,3 +171,24 @@
     </div>
 </div>
 {{end}}
+
+<script>
+function copyFromElement(elementId, btn) {
+    var copyText = document.getElementById(elementId);
+    if (!copyText) return;
+    
+    navigator.clipboard.writeText(copyText.value).then(function() {
+        var originalText = btn.innerText;
+        btn.innerText = "Copied!";
+        btn.classList.remove("btn-outline-secondary");
+        btn.classList.add("btn-success");
+        setTimeout(function() {
+            btn.innerText = originalText;
+            btn.classList.remove("btn-success");
+            btn.classList.add("btn-outline-secondary");
+        }, 2000);
+    }).catch(function(err) {
+        console.error('Failed to copy text: ', err);
+    });
+}
+</script>
