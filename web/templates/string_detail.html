@@ -3,14 +3,30 @@
 {{define "title"}}String Detail - Pierakladnia{{end}}
 
 {{define "content"}}
-<div class="mb-3">
+{{ $currentTranslation := "" }}
+{{ $currentStatus := "todo" }}
+
+{{if .Translations}}
+    {{with index .Translations 0}}
+        {{ $currentTranslation = .CurrentText }}
+        {{ $currentStatus = .Status }}
+    {{end}}
+{{end}}
+
+<div class="mb-3 d-flex justify-content-between align-items-center">
     <a href="/strings" class="btn btn-outline-secondary btn-sm">&larr; Back to Strings</a>
+    <div class="btn-group">
+        <button class="btn btn-sm btn-outline-secondary" onclick="copyFromElement('sourceTextForCopy', this)" title="Copy Source Text">Copy Source</button>
+        {{if $currentTranslation}}
+        <button class="btn btn-sm btn-outline-secondary" onclick="copyFromElement('translationTextForCopy', this)" title="Copy Translation Text">Copy Translated</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick="copyBothTexts(this)" title="Copy Source and Translation">Copy Both</button>
+        {{end}}
+    </div>
 </div>
 
 <div class="card shadow-sm mb-4">
-    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+    <div class="card-header bg-light">
         <h5 class="mb-0">Source</h5>
-        <button class="btn btn-sm btn-outline-secondary" onclick="copyFromElement('sourceTextForCopy', this)" title="Copy Source Text">Copy</button>
     </div>
     <textarea id="sourceTextForCopy" class="d-none">{{.String.SourceText}}</textarea>
     <div class="card-body">
@@ -41,25 +57,9 @@
 <div class="card shadow-sm mb-4">
     <div class="card-header bg-light d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Translated</h5>
-        
-        {{ $currentTranslation := "" }}
-        {{ $currentStatus := "todo" }}
-    
-        {{if .Translations}}
-            {{with index .Translations 0}}
-                {{ $currentTranslation = .CurrentText }}
-                {{ $currentStatus = .Status }}
-            {{end}}
-        {{end}}
 
         <div class="d-flex align-items-center">
             <textarea id="translationTextForCopy" class="d-none">{{$currentTranslation}}</textarea>
-            {{if $currentTranslation}}
-            <div class="btn-group me-3">
-                <button class="btn btn-sm btn-outline-secondary" onclick="copyFromElement('translationTextForCopy', this)" title="Copy Translation Text">Copy</button>
-                <button class="btn btn-sm btn-outline-secondary" onclick="copyBothTexts(this)" title="Copy Source and Translation">Copy Both</button>
-            </div>
-            {{end}}
             <span class="me-2">Status:</span>
             {{if or .Me.CanTranslate (eq .Me.Role "admin")}}
             <form method="POST" action="/translations/status" class="m-0">
