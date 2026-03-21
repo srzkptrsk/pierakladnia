@@ -7,23 +7,39 @@
     <div class="col-12">
         <div class="card shadow-sm">
             <div class="card-body">
-                <form method="GET" action="/strings" class="d-flex gap-2 align-items-center flex-wrap">
-                    <input type="text" name="q" class="form-control" style="max-width: 250px;" placeholder="Search Source..." value="{{.Query}}">
-                    <input type="text" name="qt" class="form-control" style="max-width: 250px;" placeholder="Search Translated..." value="{{.QueryTarget}}">
-                    <select name="status" class="form-select" style="max-width: 150px;" onchange="this.form.submit()">
-                        <option value="">Any Status</option>
-                        <option value="todo" {{if eq .Status "todo"}}selected{{end}}>Todo</option>
-                        <option value="draft" {{if eq .Status "draft"}}selected{{end}}>Draft</option>
-                        <option value="needs_review" {{if eq .Status "needs_review"}}selected{{end}}>Needs Review</option>
-                        <option value="done" {{if eq .Status "done"}}selected{{end}}>Done</option>
-                    </select>
-                    <select name="sort" class="form-select" style="max-width: 150px;" onchange="this.form.submit()">
-                        <option value="default" {{if eq .Sort "default"}}selected{{end}}>Sort: Default</option>
-                        <option value="comments_desc" {{if eq .Sort "comments_desc"}}selected{{end}}>Sort: Most Comments</option>
-                    </select>
-                    <input type="hidden" name="per_page" value="{{.PerPage}}">
-                    <button type="submit" class="btn btn-primary px-4">Search &amp; Filter</button>
-                    {{if or .Query .QueryTarget .Status .IDFilter}}<a href="/strings?per_page={{.PerPage}}" class="btn btn-outline-danger">Clear</a>{{end}}
+                <form method="GET" action="/strings" class="row g-2 align-items-center">
+                    <div class="col-12 col-md-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white text-muted"><i class="bi bi-search"></i></span>
+                            <input type="text" name="q" class="form-control" placeholder="Search Source..." value="{{.Query}}">
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white text-muted"><i class="bi bi-search"></i></span>
+                            <input type="text" name="qt" class="form-control" placeholder="Search Translated..." value="{{.QueryTarget}}">
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <select name="status" class="form-select" onchange="this.form.submit()">
+                            <option value="">Any Status</option>
+                            <option value="todo" {{if eq .Status "todo"}}selected{{end}}>Todo</option>
+                            <option value="draft" {{if eq .Status "draft"}}selected{{end}}>Draft</option>
+                            <option value="needs_review" {{if eq .Status "needs_review"}}selected{{end}}>Needs Review</option>
+                            <option value="done" {{if eq .Status "done"}}selected{{end}}>Done</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <select name="sort" class="form-select" onchange="this.form.submit()">
+                            <option value="default" {{if eq .Sort "default"}}selected{{end}}>Sort: Default</option>
+                            <option value="comments_desc" {{if eq .Sort "comments_desc"}}selected{{end}}>Sort: Most Comments</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-2 d-flex gap-2">
+                        <input type="hidden" name="per_page" value="{{.PerPage}}">
+                        <button type="submit" class="btn btn-primary flex-grow-1">Search</button>
+                        {{if or .Query .QueryTarget .Status .IDFilter}}<a href="/strings?per_page={{.PerPage}}" class="btn btn-outline-danger" title="Clear Filters"><i class="bi bi-x-lg"></i></a>{{end}}
+                    </div>
                 </form>
             </div>
         </div>
