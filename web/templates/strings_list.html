@@ -8,9 +8,8 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <form method="GET" action="/strings" class="d-flex gap-2 align-items-center flex-wrap">
-                    <input type="text" name="id_filter" class="form-control" style="max-width: 150px;" placeholder="ID (e.g. >5, 1-10)" value="{{.IDFilter}}">
-                    <input type="text" name="q" class="form-control" style="max-width: 250px;" placeholder="Search source text..." value="{{.Query}}">
-                    <input type="text" name="qt" class="form-control" style="max-width: 250px;" placeholder="Search translated text..." value="{{.QueryTarget}}">
+                    <input type="text" name="q" class="form-control" style="max-width: 250px;" placeholder="Search Source..." value="{{.Query}}">
+                    <input type="text" name="qt" class="form-control" style="max-width: 250px;" placeholder="Search Translated..." value="{{.QueryTarget}}">
                     <select name="status" class="form-select" style="max-width: 150px;" onchange="this.form.submit()">
                         <option value="">Any Status</option>
                         <option value="todo" {{if eq .Status "todo"}}selected{{end}}>Todo</option>
@@ -36,7 +35,7 @@
         <div class="d-flex gap-2">
             <div class="dropdown">
                 <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    Export Data
+                    Export
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="exportDropdown">
                     <li><a class="dropdown-item" href="/admin/strings/export">Export JSON</a></li>
@@ -47,7 +46,7 @@
             {{if eq .Me.Role "admin"}}
             <div class="dropdown">
                 <button class="btn btn-sm btn-outline-success dropdown-toggle" type="button" id="importDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    Import Data
+                    Import
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="importDropdown">
                     <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#importJsonModal">Import JSON</a></li>
