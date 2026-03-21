@@ -9,7 +9,7 @@
 
 <div class="card shadow-sm mb-4">
     <div class="card-header bg-light d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Source Text</h5>
+        <h5 class="mb-0">Source</h5>
         <button class="btn btn-sm btn-outline-secondary" onclick="copyFromElement('sourceTextForCopy', this)" title="Copy Source Text">Copy</button>
     </div>
     <textarea id="sourceTextForCopy" class="d-none">{{.String.SourceText}}</textarea>
@@ -40,7 +40,7 @@
 
 <div class="card shadow-sm mb-4">
     <div class="card-header bg-light d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">Translated Text</h5>
+        <h5 class="mb-0">Translated</h5>
         
         {{ $currentTranslation := "" }}
         {{ $currentStatus := "todo" }}
