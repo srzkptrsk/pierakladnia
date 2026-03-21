@@ -1,6 +1,12 @@
 package db
 
-import "time"
+import (
+	"crypto/md5"
+	"encoding/hex"
+	"strconv"
+	"strings"
+	"time"
+)
 
 type User struct {
 	ID              int        `json:"id"`
@@ -11,6 +17,12 @@ type User struct {
 	EmailVerifiedAt *time.Time `json:"email_verified_at"`
 	CreatedAt       time.Time  `json:"created_at"`
 	UpdatedAt       time.Time  `json:"updated_at"`
+}
+
+func (u User) GravatarURL(size int) string {
+	hash := md5.Sum([]byte(strings.ToLower(strings.TrimSpace(u.Email))))
+	hashStr := hex.EncodeToString(hash[:])
+	return "https://www.gravatar.com/avatar/" + hashStr + "?s=" + strconv.Itoa(size) + "&d=identicon"
 }
 
 type Session struct {

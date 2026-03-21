@@ -63,6 +63,55 @@ func GetAllGlossaryTerms(db *sql.DB, projectID int) ([]GlossaryTerm, error) {
 	return terms, nil
 }
 
+func CountGlossaryTerms(db *sql.DB, projectID int, category string) (int, error) {
+	query := `SELECT COUNT(*) FROM glossary_terms WHERE project_id = ?`
+	args := []interface{}{projectID}
+
+	if category != "" {
+		query += ` AND category = ?`
+		args = append(args, category)
+	}
+
+	var count int
+	err := db.QueryRow(query, args...).Scan(&count)
+	return count, err
+}
+
+func GetGlossaryTermsPaginated(db *sql.DB, projectID int, category string, limit int, offset int) ([]GlossaryTerm, error) {
+	query := `
+		SELECT id, project_id, category, source_term, target_term, description, created_at, updated_at
+		FROM glossary_terms
+		WHERE project_id = ?
+	`
+	args := []interface{}{projectID}
+
+	if category != "" {
+		query += ` AND category = ?`
+		args = append(args, category)
+	}
+
+	query += ` ORDER BY source_term ASC LIMIT ? OFFSET ?`
+	args = append(args, limit, offset)
+
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var terms []GlossaryTerm
+	for rows.Next() {
+		var t GlossaryTerm
+		if err := rows.Scan(
+			&t.ID, &t.ProjectID, &t.Category, &t.SourceTerm, &t.TargetTerm, &t.Description, &t.CreatedAt, &t.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		terms = append(terms, t)
+	}
+	return terms, nil
+}
+
 func GetGlossaryTermByID(db *sql.DB, projectID int, id int) (*GlossaryTerm, error) {
 	var t GlossaryTerm
 	err := db.QueryRow(`

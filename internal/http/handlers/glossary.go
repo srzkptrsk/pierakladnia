@@ -14,24 +14,45 @@ import (
 func GlossaryList(deps *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		activeProject := GetActiveProjectFromContext(r.Context())
-		terms, err := db.GetAllGlossaryTerms(deps.DB, activeProject.ID)
+		cat := r.URL.Query().Get("category")
+
+		// Pagination parameters
+		pageStr := r.URL.Query().Get("page")
+		perPageStr := r.URL.Query().Get("per_page")
+
+		page, err := strconv.Atoi(pageStr)
+		if err != nil || page < 1 {
+			page = 1
+		}
+
+		perPage, err := strconv.Atoi(perPageStr)
+		if err != nil || perPage < 1 {
+			perPage = 25 // App-wide default
+		}
+
+		offset := (page - 1) * perPage
+
+		totalItems, err := db.CountGlossaryTerms(deps.DB, activeProject.ID, cat)
+		if err != nil {
+			http.Error(w, "DB error counting", http.StatusInternalServerError)
+			return
+		}
+
+		terms, err := db.GetGlossaryTermsPaginated(deps.DB, activeProject.ID, cat, perPage, offset)
 		if err != nil {
 			http.Error(w, "Failed to fetch glossary", http.StatusInternalServerError)
 			return
 		}
 
-		// Simple filter MVP
-		cat := r.URL.Query().Get("category")
-		var filtered []db.GlossaryTerm
-		for _, t := range terms {
-			if cat == "" || t.Category == cat {
-				filtered = append(filtered, t)
-			}
-		}
+		totalPages := (totalItems + perPage - 1) / perPage
 
 		render.HTML(w, http.StatusOK, "glossary_list.html", map[string]interface{}{
-			"Terms":         filtered,
+			"Terms":         terms,
 			"Category":      cat,
+			"Page":          page,
+			"PerPage":       perPage,
+			"TotalPages":    totalPages,
+			"TotalItems":    totalItems,
 			"Me":            GetUserFromContext(r.Context()),
 			"ActiveProject": activeProject,
 			"UserProjects":  GetUserProjectsFromContext(r.Context()),
