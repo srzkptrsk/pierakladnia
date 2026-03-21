@@ -30,12 +30,12 @@
                 </div>
                 
                 <div class="col-md-4 mb-3">
-                    <label class="form-label fw-bold">Source Term</label>
+                    <label class="form-label fw-bold">Source</label>
                     <input type="text" class="form-control" name="source_term" value="{{if .Term}}{{.Term.SourceTerm}}{{end}}" required {{if not $isEditable}}readonly{{end}}>
                 </div>
 
                 <div class="col-md-4 mb-3">
-                    <label class="form-label fw-bold">Target Term</label>
+                    <label class="form-label fw-bold">Translated</label>
                     <input type="text" class="form-control" name="target_term" value="{{if .Term}}{{.Term.TargetTerm}}{{end}}" required {{if not $isEditable}}readonly{{end}}>
                 </div>
             </div>
