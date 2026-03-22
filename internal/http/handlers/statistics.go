@@ -10,15 +10,13 @@ import (
 
 func ProjectStatistics(deps *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		activeProject := db.Project{}
-		if p, ok := r.Context().Value("ActiveProject").(*db.Project); ok && p != nil {
-			activeProject = *p
-		} else {
+		activeProject := GetActiveProjectFromContext(r.Context())
+		if activeProject == nil {
 			http.Redirect(w, r, "/projects/switch", http.StatusFound)
 			return
 		}
 
-		user := r.Context().Value("Me").(*db.User)
+		user := GetUserFromContext(r.Context())
 
 		stats, total, err := db.GetProjectStatistics(deps.DB, activeProject.ID)
 		if err != nil {
@@ -42,18 +40,13 @@ func ProjectStatistics(deps *app.App) http.HandlerFunc {
 			}
 		}
 
-		data := struct {
-			Me            *db.User
-			ActiveProject *db.Project
-			Stats         map[string]int
-			Percentages   map[string]int
-			TotalCount    int
-		}{
-			Me:            user,
-			ActiveProject: &activeProject,
-			Stats:         stats,
-			Percentages:   percentages,
-			TotalCount:    total,
+		data := map[string]interface{}{
+			"Me":            user,
+			"ActiveProject": activeProject,
+			"UserProjects":  GetUserProjectsFromContext(r.Context()),
+			"Stats":         stats,
+			"Percentages":   percentages,
+			"TotalCount":    total,
 		}
 
 		render.HTML(w, http.StatusOK, "statistics.html", data)
