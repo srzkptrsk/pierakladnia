@@ -6,8 +6,8 @@ A web app for collaborative game translation built with Go and MySQL.
 
 | | |
 | --- | --- |
-| ![Pierakladnia screenshot 1](https://ghuxuf7gwh.s3.amazonaws.com/github/pierakladnia_screenshot_01.png) | ![Pierakladnia screenshot 2](https://ghuxuf7gwh.s3.amazonaws.com/github/pierakladnia_screenshot_02.png) |
-| ![Pierakladnia screenshot 3](https://ghuxuf7gwh.s3.amazonaws.com/github/pierakladnia_screenshot_03.png) | ![Pierakladnia screenshot 4](https://ghuxuf7gwh.s3.amazonaws.com/github/pierakladnia_screenshot_04.png) |
+| ![Pierakladnia screenshot 1](https://ghuxuf7gwh.s3.amazonaws.com/github/f8fb5463-a4be-5193-a061-f8a4b1771fd5.png) | ![Pierakladnia screenshot 2](https://ghuxuf7gwh.s3.amazonaws.com/github/0531aa09-e3ad-5218-8ed5-73155bc2df80.png) |
+| ![Pierakladnia screenshot 3](https://ghuxuf7gwh.s3.amazonaws.com/github/a897ca49-e263-50a4-9569-cfe7cc4f4f0b.png) | ![Pierakladnia screenshot 4](https://ghuxuf7gwh.s3.amazonaws.com/github/aec4186f-52a3-5688-bac2-de04ff48d91d.png) |
 
 ## Features
 
