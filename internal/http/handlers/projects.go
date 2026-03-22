@@ -25,13 +25,14 @@ func AdminProjectsList(deps *app.App) http.HandlerFunc {
 
 		// Also we might need to know who is in what project, but for MVP it might be easier
 		// to just show a list of projects and a form to add a user.
-		render.HTML(w, http.StatusOK, "admin_projects.html", map[string]interface{}{
+		render.HTML(w, r, http.StatusOK, "admin_projects.html", map[string]interface{}{
 			"Projects":      projects,
-			"AllUsers":      users, // For the assignment dropdown
+			"AllUsers":      users,
 			"ActiveProject": GetActiveProjectFromContext(r.Context()),
 			"UserProjects":  GetUserProjectsFromContext(r.Context()),
 			"Me":            GetUserFromContext(r.Context()),
 		})
+
 	}
 }
 

@@ -16,10 +16,11 @@ func Me(deps *app.App) http.HandlerFunc {
 			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
-		render.HTML(w, http.StatusOK, "me.html", map[string]interface{}{
+		render.HTML(w, r, http.StatusOK, "me.html", map[string]interface{}{
 			"User": user,
 			"Me":   user,
 		})
+
 	}
 }
 
@@ -44,7 +45,7 @@ func AdminUsersList(deps *app.App) http.HandlerFunc {
 			userProjects[u.ID] = ids
 		}
 
-		render.HTML(w, http.StatusOK, "admin_users.html", map[string]interface{}{
+		render.HTML(w, r, http.StatusOK, "admin_users.html", map[string]interface{}{
 			"Users":           users,
 			"Projects":        projects,
 			"UserProjectsMap": userProjects,
@@ -52,6 +53,7 @@ func AdminUsersList(deps *app.App) http.HandlerFunc {
 			"ActiveProject":   GetActiveProjectFromContext(r.Context()),
 			"UserProjects":    GetUserProjectsFromContext(r.Context()),
 		})
+
 	}
 }
 

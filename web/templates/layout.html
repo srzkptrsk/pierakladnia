@@ -21,15 +21,11 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
+                    {{range navItems}}
                     <li class="nav-item">
-                        <a class="nav-link" href="/strings">Strings</a>
+                        <a class="nav-link {{if eq $.CurrentPath .url}}active{{else if hasPrefix $.CurrentPath (print .url \"/\")}}active{{end}}" href="{{.url}}">{{.title}}</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/glossary">Glossary</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/statistics">Statistics</a>
-                    </li>
+                    {{end}}
                 </ul>
                 <ul class="navbar-nav">
                     {{if .Me}}

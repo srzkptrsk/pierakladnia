@@ -47,7 +47,7 @@ func RequireAuth(deps *app.App, next http.Handler) http.Handler {
 		}
 
 		if len(projects) == 0 {
-			render.HTML(w, http.StatusOK, "no_projects.html", map[string]interface{}{
+			render.HTML(w, r, http.StatusOK, "no_projects.html", map[string]interface{}{
 				"Me": user,
 			})
 			return

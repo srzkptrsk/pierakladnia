@@ -15,7 +15,7 @@ import (
 func Register(deps *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
-			render.HTML(w, http.StatusOK, "register.html", nil)
+			render.HTML(w, r, http.StatusOK, "register.html", nil)
 			return
 		}
 
@@ -29,9 +29,10 @@ func Register(deps *app.App) http.HandlerFunc {
 		password := r.FormValue("password")
 
 		if email == "" || len(password) < 6 {
-			render.HTML(w, http.StatusBadRequest, "register.html", map[string]string{
+			render.HTML(w, r, http.StatusBadRequest, "register.html", map[string]string{
 				"Error": "Invalid email or password (min 6 chars)",
 			})
+
 			return
 		}
 
@@ -43,9 +44,10 @@ func Register(deps *app.App) http.HandlerFunc {
 
 		userID, err := db.CreateUser(deps.DB, email, hash)
 		if err != nil {
-			render.HTML(w, http.StatusBadRequest, "register.html", map[string]string{
+			render.HTML(w, r, http.StatusBadRequest, "register.html", map[string]string{
 				"Error": "Email already exists or DB error",
 			})
+
 			return
 		}
 
@@ -60,9 +62,10 @@ func Register(deps *app.App) http.HandlerFunc {
 			deps.Mailer.SendVerificationEmail(email, rawToken, deps.Config.HTTP.BaseURL)
 		}
 
-		render.HTML(w, http.StatusOK, "login.html", map[string]string{
+		render.HTML(w, r, http.StatusOK, "login.html", map[string]string{
 			"Message": "Registration successful! Please check your email to verify your account.",
 		})
+
 	}
 }
 
@@ -90,9 +93,10 @@ func VerifyEmail(deps *app.App) http.HandlerFunc {
 			return
 		}
 
-		render.HTML(w, http.StatusOK, "login.html", map[string]string{
+		render.HTML(w, r, http.StatusOK, "login.html", map[string]string{
 			"Message": "Email verified successfully! You can now log in.",
 		})
+
 	}
 }
 
@@ -105,7 +109,7 @@ func Login(deps *app.App) http.HandlerFunc {
 		}
 
 		if r.Method == http.MethodGet {
-			render.HTML(w, http.StatusOK, "login.html", nil)
+			render.HTML(w, r, http.StatusOK, "login.html", nil)
 			return
 		}
 
@@ -125,16 +129,18 @@ func Login(deps *app.App) http.HandlerFunc {
 		}
 
 		if user == nil || !auth.CheckPasswordHash(password, user.PasswordHash) {
-			render.HTML(w, http.StatusUnauthorized, "login.html", map[string]string{
+			render.HTML(w, r, http.StatusUnauthorized, "login.html", map[string]string{
 				"Error": "Invalid credentials",
 			})
+
 			return
 		}
 
 		if user.EmailVerifiedAt == nil {
-			render.HTML(w, http.StatusUnauthorized, "login.html", map[string]string{
+			render.HTML(w, r, http.StatusUnauthorized, "login.html", map[string]string{
 				"Error": "Please verify your email address first",
 			})
+
 			return
 		}
 

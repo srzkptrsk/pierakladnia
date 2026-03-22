@@ -60,6 +60,14 @@ func LoadTemplates(pattern string) error {
 			}
 			return false
 		},
+		"navItems": func() []map[string]string {
+			return []map[string]string{
+				{"title": "Strings", "url": "/strings"},
+				{"title": "Glossary", "url": "/glossary"},
+				{"title": "Statistics", "url": "/statistics"},
+			}
+		},
+		"hasPrefix": strings.HasPrefix,
 	}
 
 	tmplCache = make(map[string]*template.Template)
@@ -87,7 +95,7 @@ func LoadTemplates(pattern string) error {
 	return nil
 }
 
-func HTML(w http.ResponseWriter, status int, name string, data interface{}) {
+func HTML(w http.ResponseWriter, r *http.Request, status int, name string, data interface{}) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(status)
 
@@ -103,6 +111,18 @@ func HTML(w http.ResponseWriter, status int, name string, data interface{}) {
 	if !ok {
 		http.Error(w, fmt.Sprintf("Template not found: %s", name), http.StatusInternalServerError)
 		return
+	}
+
+	// Try to inject CurrentPath if data is a map
+	if m, ok := data.(map[string]interface{}); ok {
+		if r != nil {
+			m["CurrentPath"] = r.URL.Path
+		}
+	} else if m, ok := data.(map[string]string); ok {
+		// Just in case someone passed a map[string]string which Go treats differently
+		if r != nil {
+			m["CurrentPath"] = r.URL.Path
+		}
 	}
 
 	err := t.ExecuteTemplate(w, name, data)

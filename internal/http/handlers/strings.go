@@ -73,7 +73,7 @@ func StringsList(deps *app.App) http.HandlerFunc {
 
 		totalPages := (totalItems + perPage - 1) / perPage
 
-		render.HTML(w, http.StatusOK, "strings_list.html", map[string]interface{}{
+		render.HTML(w, r, http.StatusOK, "strings_list.html", map[string]interface{}{
 			"Strings":       strs,
 			"Query":         sourceQuery,
 			"QueryTarget":   targetQuery,
@@ -88,6 +88,7 @@ func StringsList(deps *app.App) http.HandlerFunc {
 			"ActiveProject": activeProject,
 			"UserProjects":  GetUserProjectsFromContext(r.Context()),
 		})
+
 	}
 }
 
@@ -186,7 +187,7 @@ func StringDetails(deps *app.App) http.HandlerFunc {
 			usersMap[u.ID] = u
 		}
 
-		render.HTML(w, http.StatusOK, "string_detail.html", map[string]interface{}{
+		render.HTML(w, r, http.StatusOK, "string_detail.html", map[string]interface{}{
 			"String":        str,
 			"Translations":  translations,
 			"Revisions":     revisions,
@@ -197,6 +198,7 @@ func StringDetails(deps *app.App) http.HandlerFunc {
 			"UserProjects":  GetUserProjectsFromContext(r.Context()),
 			"UsersMap":      usersMap,
 		})
+
 	}
 }
 

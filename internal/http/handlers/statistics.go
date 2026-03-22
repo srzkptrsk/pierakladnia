@@ -49,6 +49,6 @@ func ProjectStatistics(deps *app.App) http.HandlerFunc {
 			"TotalCount":    total,
 		}
 
-		render.HTML(w, http.StatusOK, "statistics.html", data)
+		render.HTML(w, r, http.StatusOK, "statistics.html", data)
 	}
 }

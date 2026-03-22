@@ -46,7 +46,7 @@ func GlossaryList(deps *app.App) http.HandlerFunc {
 
 		totalPages := (totalItems + perPage - 1) / perPage
 
-		render.HTML(w, http.StatusOK, "glossary_list.html", map[string]interface{}{
+		render.HTML(w, r, http.StatusOK, "glossary_list.html", map[string]interface{}{
 			"Terms":         terms,
 			"Category":      cat,
 			"Page":          page,
@@ -57,6 +57,7 @@ func GlossaryList(deps *app.App) http.HandlerFunc {
 			"ActiveProject": activeProject,
 			"UserProjects":  GetUserProjectsFromContext(r.Context()),
 		})
+
 	}
 }
 
@@ -70,12 +71,13 @@ func GlossaryCreate(deps *app.App) http.HandlerFunc {
 
 		if r.Method == http.MethodGet {
 			// Show empty form using detail view passing a nil Term
-			render.HTML(w, http.StatusOK, "glossary_detail.html", map[string]interface{}{
+			render.HTML(w, r, http.StatusOK, "glossary_detail.html", map[string]interface{}{
 				"Term":          nil,
 				"Me":            user,
 				"ActiveProject": GetActiveProjectFromContext(r.Context()),
 				"UserProjects":  GetUserProjectsFromContext(r.Context()),
 			})
+
 			return
 		}
 
@@ -126,13 +128,14 @@ func GlossaryDetails(deps *app.App) http.HandlerFunc {
 
 		if r.Method == http.MethodGet {
 			comments, _ := db.GetCommentsForEntity(deps.DB, "glossary_term", termID)
-			render.HTML(w, http.StatusOK, "glossary_detail.html", map[string]interface{}{
+			render.HTML(w, r, http.StatusOK, "glossary_detail.html", map[string]interface{}{
 				"Term":          term,
 				"Comments":      comments,
 				"Me":            user,
 				"ActiveProject": activeProject,
 				"UserProjects":  GetUserProjectsFromContext(r.Context()),
 			})
+
 			return
 		}
 
