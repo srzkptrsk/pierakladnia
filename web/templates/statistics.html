@@ -22,21 +22,21 @@
             <div class="col-md-2 offset-md-1">
                 <div class="card bg-success text-white mb-3 shadow-sm border-0">
                     <div class="card-body">
-                        <h3 class="card-title mb-0">{{index .Stats "translated"}}</h3>
-                        <p class="card-text small text-uppercase fw-bold mt-1">Translated</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <div class="card bg-info text-dark mb-3 shadow-sm border-0">
-                    <div class="card-body">
-                        <h3 class="card-title mb-0">{{index .Stats "approved"}}</h3>
-                        <p class="card-text small text-uppercase fw-bold mt-1">Approved</p>
+                        <h3 class="card-title mb-0">{{index .Stats "done"}}</h3>
+                        <p class="card-text small text-uppercase fw-bold mt-1">Done</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="card bg-warning text-dark mb-3 shadow-sm border-0">
+                    <div class="card-body">
+                        <h3 class="card-title mb-0">{{index .Stats "needs_review"}}</h3>
+                        <p class="card-text small text-uppercase fw-bold mt-1">Needs Review</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-info text-dark mb-3 shadow-sm border-0">
                     <div class="card-body">
                         <h3 class="card-title mb-0">{{index .Stats "draft"}}</h3>
                         <p class="card-text small text-uppercase fw-bold mt-1">Draft</p>
@@ -68,19 +68,19 @@
                 const ctx = document.getElementById('statsChart').getContext('2d');
                 
                 const data = {
-                    labels: ['Translated', 'Approved', 'Draft', 'Todo', 'Untranslated'],
+                    labels: ['Done', 'Needs Review', 'Draft', 'Todo', 'Untranslated'],
                     datasets: [{
                         data: [
-                            {{index .Stats "translated"}},
-                            {{index .Stats "approved"}},
-                            {{index .Stats "draft"}},
-                            {{index .Stats "todo"}},
-                            {{index .Stats "untranslated"}}
+                            parseInt('{{index .Stats "done"}}'),
+                            parseInt('{{index .Stats "needs_review"}}'),
+                            parseInt('{{index .Stats "draft"}}'),
+                            parseInt('{{index .Stats "todo"}}'),
+                            parseInt('{{index .Stats "untranslated"}}')
                         ],
                         backgroundColor: [
                             '#198754', // success
-                            '#0dcaf0', // info
                             '#ffc107', // warning
+                            '#0dcaf0', // info
                             '#dc3545', // danger
                             '#6c757d'  // secondary
                         ],

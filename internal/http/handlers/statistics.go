@@ -33,7 +33,7 @@ func ProjectStatistics(deps *app.App) http.HandlerFunc {
 		}
 
 		// Ensure we don't have nil for statuses we expect
-		for _, s := range []string{"todo", "draft", "translated", "approved", "untranslated"} {
+		for _, s := range []string{"todo", "draft", "needs_review", "done", "untranslated"} {
 			if _, ok := stats[s]; !ok {
 				stats[s] = 0
 				percentages[s] = 0
