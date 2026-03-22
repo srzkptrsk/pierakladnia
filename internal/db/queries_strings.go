@@ -390,3 +390,31 @@ func GetAllStringsWithTranslationsForExportPO(db *sql.DB, projectID int) ([]Stri
 	}
 	return stringsSlice, nil
 }
+
+func GetProjectStatistics(db *sql.DB, projectID int) (map[string]int, int, error) {
+	q := `
+		SELECT COALESCE(t.status, 'untranslated') as current_status, COUNT(*) as count
+		FROM strings s
+		LEFT JOIN translations t ON s.id = t.string_id AND t.locale = 'target'
+		WHERE s.project_id = ?
+		GROUP BY current_status
+	`
+	rows, err := db.Query(q, projectID)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	stats := make(map[string]int)
+	total := 0
+	for rows.Next() {
+		var status string
+		var count int
+		if err := rows.Scan(&status, &count); err != nil {
+			return nil, 0, err
+		}
+		stats[status] = count
+		total += count
+	}
+	return stats, total, nil
+}

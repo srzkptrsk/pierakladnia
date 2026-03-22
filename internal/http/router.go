@@ -49,6 +49,7 @@ func NewRouter(deps *app.App) http.Handler {
 	mux.Handle("/strings", RequireAuth(deps, http.HandlerFunc(handlers.StringsList(deps))))
 	mux.Handle("/strings/", RequireAuth(deps, http.HandlerFunc(handlers.StringDetails(deps))))
 	mux.Handle("/translations/status", RequireAuth(deps, http.HandlerFunc(handlers.TranslationStatusUpdate(deps))))
+	mux.Handle("/statistics", RequireAuth(deps, http.HandlerFunc(handlers.ProjectStatistics(deps))))
 
 	mux.Handle("/comments", RequireAuth(deps, http.HandlerFunc(handlers.CreateComment(deps))))
 

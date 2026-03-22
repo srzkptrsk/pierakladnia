@@ -1,0 +1,80 @@
+{{define "title"}}Statistics - Pierakladnia{{end}}
+
+{{define "content"}}
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white">
+        <h4 class="mb-0">Translation Statistics</h4>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title mb-4">Progress for project: {{.ActiveProject.Name}}</h5>
+        
+        <p class="text-muted">Total Strings: <strong>{{.TotalCount}}</strong></p>
+
+        {{if gt .TotalCount 0}}
+        <div class="mb-4">
+            <h6>Overall Coverage</h6>
+            <div class="progress" style="height: 30px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{index .Percentages "translated"}}%" title="Translated: {{index .Stats "translated"}}">
+                    {{if gt (index .Percentages "translated") 5}}{{index .Percentages "translated"}}%{{end}}
+                </div>
+                <div class="progress-bar bg-info" role="progressbar" style="width: {{index .Percentages "approved"}}%" title="Approved: {{index .Stats "approved"}}">
+                    {{if gt (index .Percentages "approved") 5}}{{index .Percentages "approved"}}%{{end}}
+                </div>
+                <div class="progress-bar bg-warning" role="progressbar" style="width: {{index .Percentages "draft"}}%" title="Draft: {{index .Stats "draft"}}">
+                     {{if gt (index .Percentages "draft") 5}}{{index .Percentages "draft"}}%{{end}}
+                </div>
+                <div class="progress-bar bg-danger" role="progressbar" style="width: {{index .Percentages "todo"}}%" title="Todo: {{index .Stats "todo"}}">
+                     {{if gt (index .Percentages "todo") 5}}{{index .Percentages "todo"}}%{{end}}
+                </div>
+                <!-- Untranslated space assumes the rest -->
+            </div>
+        </div>
+
+        <div class="row text-center mt-4">
+            <div class="col-md-2 offset-md-1">
+                <div class="card bg-success text-white mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{index .Stats "translated"}}</h5>
+                        <p class="card-text">Translated</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-info text-white mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{index .Stats "approved"}}</h5>
+                        <p class="card-text">Approved</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-warning text-dark mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{index .Stats "draft"}}</h5>
+                        <p class="card-text">Draft</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-danger text-white mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{index .Stats "todo"}}</h5>
+                        <p class="card-text">Todo</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-secondary text-white mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{index .Stats "untranslated"}}</h5>
+                        <p class="card-text">Untranslated</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{else}}
+        <div class="alert alert-info">No strings found for this project.</div>
+        {{end}}
+    </div>
+</div>
+{{end}}
