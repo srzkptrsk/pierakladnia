@@ -16,7 +16,7 @@ A web app for collaborative game translation built with Go and MySQL.
 - **Comments** — discuss translations and glossary terms
 - **Revision History** — review translation changes with user avatars in history views
 - **Glossary** — maintain project glossary (characters, places, terms)
-- **Project Statistics** — visual overview of translation progress with charts
+- **Project Statistics** — visual overview of translation progress with doughnut charts
 - **Multi-project** — work on multiple translation projects
 - **Auth** — register/login with email verification via AWS SES
 - **Access control** — admin and user roles, per-user translation permissions
