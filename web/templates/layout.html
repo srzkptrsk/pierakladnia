@@ -23,7 +23,7 @@
                 <ul class="navbar-nav me-auto">
                     {{range navItems}}
                     <li class="nav-item">
-                        <a class="nav-link {{if eq $.CurrentPath .url}}active{{else if hasPrefix $.CurrentPath (print .url \"/\")}}active{{end}}" href="{{.url}}">{{.title}}</a>
+                        <a class="nav-link {{if eq $.CurrentPath .url}}active{{else if hasPrefix $.CurrentPath (print .url "/")}}{{if ne .url "/"}}active{{end}}{{end}}" href="{{.url}}">{{.title}}</a>
                     </li>
                     {{end}}
                 </ul>
