@@ -11,7 +11,7 @@ A web app for collaborative game translation built with Go and MySQL.
 
 ## Features
 
-- **Strings & Translations** — manage source strings and their translations with status tracking (todo, draft, needs_review, done)
+- **Strings & Translations** — manage source strings and their translations with status tracking (draft, needs_review, done)
 - **Search & Filtering** — filter strings by source text, translated text, status, and ID expressions such as ranges or lists, with filters remembered between visits
 - **Comments** — discuss translations and glossary terms
 - **Revision History** — review translation changes with user avatars in history views
