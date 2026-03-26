@@ -15,7 +15,7 @@ import (
 func Register(deps *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
-			render.HTML(w, r, http.StatusOK, "register.html", nil)
+			render.HTML(w, r, http.StatusOK, "register.html", map[string]interface{}{})
 			return
 		}
 
@@ -109,7 +109,7 @@ func Login(deps *app.App) http.HandlerFunc {
 		}
 
 		if r.Method == http.MethodGet {
-			render.HTML(w, r, http.StatusOK, "login.html", nil)
+			render.HTML(w, r, http.StatusOK, "login.html", map[string]interface{}{})
 			return
 		}
 
