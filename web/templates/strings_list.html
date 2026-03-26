@@ -200,7 +200,7 @@
                     <a class="page-link" href="/strings?page={{with $p := .Page}}{{if gt $p 1}}{{sub $p 1}}{{else}}1{{end}}{{end}}&q={{.Query}}&qt={{.QueryTarget}}&status={{.Status}}&sort={{.Sort}}&id_filter={{.IDFilter}}&per_page={{.PerPage}}">Prev</a>
                 </li>
                 
-                {{/* A simple loop is hard in pure text/template, so we use a pragmatic approach for MVP */}}
+                {{/* A simple loop is hard in pure text/template, so we use a pragmatic approach */}}
                 <li class="page-item active"><a class="page-link" href="#">Page {{.Page}} of {{.TotalPages}}</a></li>
                 
                 <li class="page-item {{if ge .Page .TotalPages}}disabled{{end}}">

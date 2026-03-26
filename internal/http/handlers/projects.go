@@ -23,8 +23,6 @@ func AdminProjectsList(deps *app.App) http.HandlerFunc {
 			return
 		}
 
-		// Also we might need to know who is in what project, but for MVP it might be easier
-		// to just show a list of projects and a form to add a user.
 		render.HTML(w, r, http.StatusOK, "admin_projects.html", map[string]interface{}{
 			"Projects":      projects,
 			"AllUsers":      users,

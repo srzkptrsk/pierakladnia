@@ -59,7 +59,7 @@ func NewRouter(deps *app.App) http.Handler {
 	// Glossary
 	mux.Handle("/glossary", RequireAuth(deps, http.HandlerFunc(handlers.GlossaryList(deps))))
 	mux.Handle("/glossary/new", RequireAuth(deps, http.HandlerFunc(handlers.GlossaryCreate(deps))))
-	// For MVP, /glossary/{id} handles both view and edit submissions
+	// /glossary/{id} handles both view and edit submissions
 	mux.Handle("/glossary/", RequireAuth(deps, http.HandlerFunc(handlers.GlossaryDetails(deps))))
 
 	// Admin

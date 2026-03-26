@@ -16,7 +16,7 @@ CREATE TABLE project_users (
 );
 
 -- Note: In a production heavily-populated environment, adding a foreign key with NOT NULL 
--- requires default values or a multi-step migration. Since we are in MVP and the DB is mostly empty, 
+-- requires default values or a multi-step migration. Since the DB is mostly empty,
 -- we will just add the column, set it to a default '1', and then make it NOT NULL and add FK constraint.
 -- Actually, there might not be a project '1' yet. We should create a default project first.
 

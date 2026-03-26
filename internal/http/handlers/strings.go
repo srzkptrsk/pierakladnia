@@ -147,7 +147,7 @@ func StringDetails(deps *app.App) http.HandlerFunc {
 			// Otherwise, it's a translation update
 			locale := r.FormValue("locale")
 			if locale == "" {
-				locale = "target" // Default MVP locale
+				locale = "target" // Default locale
 			}
 			newText := r.FormValue("translation")
 
@@ -169,7 +169,7 @@ func StringDetails(deps *app.App) http.HandlerFunc {
 		// Preload revisions for translations
 		var revisions []db.TranslationRevision
 		if len(translations) > 0 {
-			// for MVP we only show revisions for the first locale
+			// we only show revisions for the first locale
 			revisions, _ = db.GetRevisionsForTranslation(deps.DB, translations[0].ID)
 		}
 

@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// In MVP, we just load directly from filesystem so we can iterate without restarting
+// We just load directly from filesystem so we can iterate without restarting
 // Though you can use embed in a compiled binary.
 
 var tmplCache map[string]*template.Template
