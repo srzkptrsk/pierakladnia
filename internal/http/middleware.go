@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"pierakladnia/internal/app"
-	"pierakladnia/internal/auth"
 	"pierakladnia/internal/db"
 	"pierakladnia/internal/http/handlers"
 	"pierakladnia/internal/render"
@@ -22,7 +21,7 @@ func RequireAuth(deps *app.App, next http.Handler) http.Handler {
 			return
 		}
 
-		user, err := auth.GetUserFromSession(deps.DB, cookie.Value)
+		user, err := deps.Sessions.GetUserFromSession(cookie.Value)
 		if err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return

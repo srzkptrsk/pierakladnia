@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"pierakladnia/internal/app"
+	"pierakladnia/internal/auth"
 	"pierakladnia/internal/config"
 	"pierakladnia/internal/db"
 	myhttp "pierakladnia/internal/http"
@@ -28,9 +29,10 @@ func main() {
 	}
 
 	appDeps := &app.App{
-		Config: cfg,
-		DB:     database,
-		Mailer: mailer,
+		Config:   cfg,
+		DB:       database,
+		Mailer:   mailer,
+		Sessions: auth.NewSessionResolver(database),
 	}
 
 	router := myhttp.NewRouter(appDeps)
