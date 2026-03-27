@@ -1,9 +1,11 @@
 package app
 
 import (
+	"compress/gzip"
 	"context"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"pierakladnia/internal/app"
@@ -120,4 +122,35 @@ func RequireAdmin(deps *app.App, next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r)
 	}))
+}
+
+// gzipResponseWriter wraps http.ResponseWriter to compress data
+type gzipResponseWriter struct {
+	http.ResponseWriter
+	gw *gzip.Writer
+}
+
+func (w *gzipResponseWriter) Write(b []byte) (int, error) {
+	return w.gw.Write(b)
+}
+
+// GzipMiddleware compresses HTTP responses if the client supports it
+func GzipMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		w.Header().Set("Content-Encoding", "gzip")
+		w.Header().Add("Vary", "Accept-Encoding")
+
+		// You can set the compression level here:
+		// gzip.BestSpeed, gzip.BestCompression, gzip.DefaultCompression, or an integer 1-9
+		gz, _ := gzip.NewWriterLevel(w, gzip.BestCompression)
+		defer gz.Close()
+
+		gzw := &gzipResponseWriter{ResponseWriter: w, gw: gz}
+		next.ServeHTTP(gzw, r)
+	})
 }

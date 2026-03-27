@@ -74,8 +74,10 @@ func NewRouter(deps *app.App) http.Handler {
 	mux.Handle("/admin/strings/import", RequireAdmin(deps, http.HandlerFunc(handlers.AdminStringsImport(deps))))
 	mux.Handle("/admin/strings/import/po", RequireAdmin(deps, http.HandlerFunc(handlers.AdminStringsImportPO(deps))))
 
-	// Apply global middleware (logging, etc)
-	return LoggingMiddleware(mux)
+	// Apply global middlewares (logging, compression, etc)
+	handler := LoggingMiddleware(mux)
+	handler = GzipMiddleware(handler)
+	return handler
 }
 
 // LoggingMiddleware logs HTTP requests

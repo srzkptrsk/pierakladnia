@@ -66,6 +66,10 @@ export APP_CONFIG=./config/config.local.json
 go run ./cmd/app
 ```
 
+## Performance
+
+- **Gzip Compression**: HTTP responses are automatically compressed using the standard library `compress/gzip`. To adjust the compression level (e.g., from `gzip.BestSpeed` to `gzip.BestCompression`), modify the `gzip.NewWriterLevel` call within the `GzipMiddleware` function in `internal/http/middleware.go`.
+
 ## Admin CLI
 
 ```bash
